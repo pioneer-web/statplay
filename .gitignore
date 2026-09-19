@@ -7,11 +7,4 @@ staticfiles/
 media/
 .vscode/
 .idea/
-
-.env
-__pycache__/
-*.pyc
-
-.env
-__pycache__/
-*.pyc
+celerybeat-schedule*

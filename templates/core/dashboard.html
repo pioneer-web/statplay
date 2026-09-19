@@ -1,1 +1,188 @@
-<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>StatPlay Dashboard</title><style>body{font-family:system-ui;margin:0;background:#08111f;color:#e5e7eb}.wrap{max-width:1180px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{font-size:26px;font-weight:800}.sub{color:#94a3b8}.filters a{display:inline-block;padding:8px 12px;margin:4px;border-radius:999px;background:#182338;color:#fff;text-decoration:none}.filters a.active{background:#e5e7eb;color:#08111f}.card{background:#111b2f;border:1px solid #24324a;border-radius:16px;padding:16px;margin:12px 0;display:grid;grid-template-columns:1.5fr 1.3fr .6fr .6fr;gap:12px;align-items:center}.prob{font-size:22px;font-weight:800}.empty{padding:30px;background:#111b2f;border-radius:16px;margin-top:18px}@media(max-width:760px){.card{grid-template-columns:1fr 1fr}.top{align-items:flex-start;flex-direction:column}}</style></head><body><main class="wrap"><div class="top"><div><div class="brand">StatPlay</div><div class="sub">Probabilidades, odds, alertas e inteligência esportiva</div></div><form method="post" action="/logout/">{% csrf_token %}<button>Sair</button></form></div><h2>Mercados com {{ min_p }}%+</h2><div class="filters"><a class="{% if band == '70' %}active{% endif %}" href="/?band=70">70%+</a><a class="{% if band == '80' %}active{% endif %}" href="/?band=80">80%+</a><a class="{% if band == '90' %}active{% endif %}" href="/?band=90">90%+</a></div>{% for p in predictions %}<section class="card"><div><strong>{{ p.event.home_team }} x {{ p.event.away_team }}</strong><div class="sub">{{ p.event.starts_at|date:'d/m H:i' }}</div></div><div>{{ p.market.name }} — {{ p.selection }}{% if p.line %} {{ p.line }}{% endif %}</div><div><span class="prob">{{ p.probability }}%</span><div class="sub">modelo</div></div><div><strong>{{ p.fair_odd }}</strong><div class="sub">odd justa</div></div></section>{% empty %}<div class="empty">Ainda não há previsões carregadas. Configure as fontes de dados e execute a ingestão.</div>{% endfor %}</main></body></html>
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StatPlay</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    font-family:system-ui,sans-serif;
+    margin:0;
+    background:#07111f;
+    color:#e5e7eb
+}
+.wrap{
+    max-width:1250px;
+    margin:auto;
+    padding:22px
+}
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px
+}
+.brand{
+    font-size:30px;
+    font-weight:900
+}
+.brand span{color:#34d399}
+.sub{color:#94a3b8;font-size:14px}
+.filters{margin:25px 0}
+.filters a{
+    display:inline-block;
+    padding:9px 16px;
+    margin-right:6px;
+    border-radius:10px;
+    background:#172338;
+    color:white;
+    text-decoration:none
+}
+.filters a.active{
+    background:#34d399;
+    color:#07111f;
+    font-weight:800
+}
+.card{
+    background:#101b2e;
+    border:1px solid #22314a;
+    border-radius:16px;
+    padding:17px;
+    margin:12px 0;
+    display:grid;
+    grid-template-columns:1.4fr 1.3fr .7fr .7fr .8fr .7fr;
+    gap:14px;
+    align-items:center
+}
+.game{font-weight:750}
+.prob{
+    font-size:22px;
+    font-weight:900
+}
+.edge-positive{
+    color:#34d399;
+    font-weight:900
+}
+.edge-negative{
+    color:#fb7185;
+    font-weight:900
+}
+.label{
+    color:#94a3b8;
+    font-size:12px;
+    margin-top:2px
+}
+.empty{
+    padding:35px;
+    background:#101b2e;
+    border-radius:16px
+}
+button{
+    background:#172338;
+    color:white;
+    border:0;
+    padding:9px 15px;
+    border-radius:8px
+}
+@media(max-width:850px){
+    .card{grid-template-columns:1fr 1fr}
+    .top{align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+
+<div class="top">
+    <div>
+        <div class="brand">Stat<span>Play</span></div>
+        <div class="sub">
+            Inteligência estatística esportiva
+        </div>
+    </div>
+
+    <form method="post" action="/logout/">
+        {% csrf_token %}
+        <button>Sair</button>
+    </form>
+</div>
+
+<h2>Oportunidades analisadas</h2>
+
+<div class="filters">
+    <a class="{% if band == '70' %}active{% endif %}" href="/?band=70">70%+</a>
+    <a class="{% if band == '80' %}active{% endif %}" href="/?band=80">80%+</a>
+    <a class="{% if band == '90' %}active{% endif %}" href="/?band=90">90%+</a>
+</div>
+
+{% for p in predictions %}
+
+<section class="card">
+
+<div>
+    <div class="game">
+        {{ p.event.home_team }} × {{ p.event.away_team }}
+    </div>
+    <div class="label">
+        {{ p.event.competition.name }} ·
+        {{ p.event.starts_at|date:"d/m H:i" }}
+    </div>
+</div>
+
+<div>
+    <strong>{{ p.market.name }}</strong>
+    <div class="label">
+        {{ p.selection }}
+        {% if p.line %} {{ p.line }}{% endif %}
+    </div>
+</div>
+
+<div>
+    <span class="prob">{{ p.probability }}%</span>
+    <div class="label">modelo StatPlay</div>
+</div>
+
+<div>
+    <strong>{{ p.fair_odd|default:"—" }}</strong>
+    <div class="label">odd justa</div>
+</div>
+
+<div>
+    {% if p.best_odd %}
+        <strong>{{ p.best_odd }}</strong>
+        <div class="label">
+            {{ p.best_bookmaker }}
+        </div>
+    {% else %}
+        —
+        <div class="label">sem odd</div>
+    {% endif %}
+</div>
+
+<div>
+    {% if p.edge != None %}
+        <span class="{% if p.edge > 0 %}edge-positive{% else %}edge-negative{% endif %}">
+            {{ p.edge }} p.p.
+        </span>
+        <div class="label">diferença modelo/mercado</div>
+    {% else %}
+        —
+    {% endif %}
+</div>
+
+</section>
+
+{% empty %}
+
+<div class="empty">
+Nenhuma análise encontrada nessa faixa.
+</div>
+
+{% endfor %}
+
+</main>
+</body>
+</html>
