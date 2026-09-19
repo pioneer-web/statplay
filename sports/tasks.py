@@ -1,5 +1,9 @@
 from celery import shared_task
+
+from sports.providers.sofascore import SofaScoreProvider
+
+
 @shared_task
 def refresh_upcoming_events():
-    # Adaptador de API esportiva entra aqui. Nunca gravar chaves no código.
-    return {'status':'adapter_not_configured'}
+    provider = SofaScoreProvider()
+    return provider.sync_upcoming(days=3)

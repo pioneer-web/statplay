@@ -13,3 +13,83 @@ class Prediction(models.Model):
     def save(self,*args,**kwargs):
         if self.probability and not self.fair_odd: self.fair_odd=round(100/float(self.probability),3)
         super().save(*args,**kwargs)
+
+
+
+class PredictionContext(models.Model):
+    prediction = models.OneToOneField(
+        Prediction,
+        on_delete=models.CASCADE,
+        related_name="context",
+    )
+
+    engine_version = models.CharField(
+        max_length=30,
+        default="1.1.0",
+    )
+
+    home_lineup_available = models.BooleanField(
+        default=False,
+    )
+    away_lineup_available = models.BooleanField(
+        default=False,
+    )
+
+    home_lineup_confirmed = models.BooleanField(
+        default=False,
+    )
+    away_lineup_confirmed = models.BooleanField(
+        default=False,
+    )
+
+    home_attack_factor = models.DecimalField(
+        max_digits=6,
+        decimal_places=4,
+        default=1,
+    )
+    away_attack_factor = models.DecimalField(
+        max_digits=6,
+        decimal_places=4,
+        default=1,
+    )
+
+    home_defense_factor = models.DecimalField(
+        max_digits=6,
+        decimal_places=4,
+        default=1,
+    )
+    away_defense_factor = models.DecimalField(
+        max_digits=6,
+        decimal_places=4,
+        default=1,
+    )
+
+    base_home_goals = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        null=True,
+        blank=True,
+    )
+    base_away_goals = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        null=True,
+        blank=True,
+    )
+
+    adjusted_home_goals = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        null=True,
+        blank=True,
+    )
+    adjusted_away_goals = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        null=True,
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )

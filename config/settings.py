@@ -33,3 +33,15 @@ CELERY_BEAT_SCHEDULE={
 }
 SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO','https')
 CSRF_COOKIE_SECURE=not DEBUG; SESSION_COOKIE_SECURE=not DEBUG; X_FRAME_OPTIONS='DENY'
+
+# StatPlay automation
+CELERY_BEAT_SCHEDULE = {
+    "statplay-pipeline": {
+        "task": "core.tasks.run_statplay_pipeline",
+        "schedule": 1800.0,
+    },
+    "statplay-settlement": {
+        "task": "core.tasks.settle_statplay_predictions",
+        "schedule": 900.0,
+    },
+}

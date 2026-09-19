@@ -1,5 +1,11 @@
 from celery import shared_task
+
+from odds.providers.the_odds_api import TheOddsApiProvider
+
+
 @shared_task
 def refresh_odds():
-    # Adaptador para agregadores/feed de odds.
-    return {'status':'odds_provider_not_configured'}
+
+    provider = TheOddsApiProvider()
+
+    return provider.sync()
