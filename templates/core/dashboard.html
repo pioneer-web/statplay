@@ -435,34 +435,7 @@ body{
 
 <main class="app">
 
-<header class="header">
-
-<div class="brand">
- <div class="logo">
-  Stat<span>Play</span>
- </div>
-
- <div class="subtitle">
-  Inteligência esportiva
- </div>
-</div>
-
-<form
- method="post"
- action="/logout/"
->
-{% csrf_token %}
-
-<button
- class="logout"
- aria-label="Sair"
->
-↗
-</button>
-
-</form>
-
-</header>
+{% include "components/app_header.html" %}
 
 
 <section class="context">

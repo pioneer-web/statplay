@@ -1,0 +1,278 @@
+<style>
+.sp-header{
+ position:relative;
+ z-index:50;
+
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+
+ margin:0 -16px 18px;
+ padding:16px;
+
+ background:#f5f6f8;
+}
+
+.sp-brand{
+ color:#181c22;
+ text-decoration:none;
+}
+
+.sp-logo{
+ font-size:25px;
+ line-height:1;
+ font-weight:800;
+ letter-spacing:-.7px;
+}
+
+.sp-logo span{
+ color:#15a46d;
+}
+
+.sp-subtitle{
+ margin-top:3px;
+ color:#737b87;
+ font-size:11px;
+}
+
+.sp-menu-wrap{
+ position:relative;
+}
+
+.sp-menu-button{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+
+ width:40px;
+ height:40px;
+
+ border:1px solid #e4e7ec;
+ border-radius:12px;
+
+ background:#fff;
+ color:#181c22;
+
+ font-size:20px;
+ cursor:pointer;
+
+ box-shadow:
+ 0 2px 10px rgba(20,30,45,.04);
+}
+
+.sp-menu-panel{
+ position:absolute;
+ top:48px;
+ right:0;
+
+ width:190px;
+
+ overflow:hidden;
+
+ border:1px solid #e4e7ec;
+ border-radius:14px;
+
+ background:#fff;
+
+ box-shadow:
+ 0 12px 35px rgba(20,30,45,.14);
+}
+
+.sp-menu-panel[hidden]{
+ display:none;
+}
+
+.sp-menu-item{
+ display:flex;
+ align-items:center;
+ gap:10px;
+
+ width:100%;
+ min-height:46px;
+
+ padding:0 14px;
+
+ border:0;
+ border-bottom:1px solid #f0f2f5;
+
+ background:#fff;
+
+ color:#181c22;
+ text-decoration:none;
+
+ font-size:13px;
+ font-weight:650;
+
+ cursor:pointer;
+}
+
+.sp-menu-item:last-child{
+ border-bottom:0;
+}
+
+.sp-menu-item:hover{
+ background:#f7f8fa;
+}
+
+.sp-menu-icon{
+ width:21px;
+ color:#737b87;
+ text-align:center;
+}
+
+.sp-logout-form{
+ margin:0;
+}
+</style>
+
+<header class="sp-header">
+
+<a
+ href="/"
+ class="sp-brand"
+>
+ <div class="sp-logo">
+  Stat<span>Play</span>
+ </div>
+
+ <div class="sp-subtitle">
+  Inteligência esportiva
+ </div>
+</a>
+
+
+<div class="sp-menu-wrap">
+
+<button
+ type="button"
+ class="sp-menu-button"
+ id="spMenuButton"
+ aria-label="Abrir menu"
+ aria-expanded="false"
+>
+ ☰
+</button>
+
+
+<div
+ class="sp-menu-panel"
+ id="spMenuPanel"
+ hidden
+>
+
+<a
+ href="/"
+ class="sp-menu-item"
+>
+ <span class="sp-menu-icon">⌂</span>
+ Partidas
+</a>
+
+
+<a
+ href="{% url 'billing:account' %}"
+ class="sp-menu-item"
+>
+ <span class="sp-menu-icon">○</span>
+ Minha conta
+</a>
+
+
+<form
+ class="sp-logout-form"
+ method="post"
+ action="/logout/"
+>
+ {% csrf_token %}
+
+ <button
+  type="submit"
+  class="sp-menu-item"
+ >
+  <span class="sp-menu-icon">↗</span>
+  Sair
+ </button>
+</form>
+
+</div>
+
+</div>
+
+</header>
+
+
+<script>
+(function () {
+ const button =
+   document.getElementById(
+     "spMenuButton"
+   );
+
+ const panel =
+   document.getElementById(
+     "spMenuPanel"
+   );
+
+ if (!button || !panel) {
+   return;
+ }
+
+ button.addEventListener(
+   "click",
+   function (event) {
+     event.stopPropagation();
+
+     const opened =
+       !panel.hasAttribute(
+         "hidden"
+       );
+
+     if (opened) {
+       panel.setAttribute(
+         "hidden",
+         ""
+       );
+
+       button.setAttribute(
+         "aria-expanded",
+         "false"
+       );
+     } else {
+       panel.removeAttribute(
+         "hidden"
+       );
+
+       button.setAttribute(
+         "aria-expanded",
+         "true"
+       );
+     }
+   }
+ );
+
+ document.addEventListener(
+   "click",
+   function (event) {
+     if (
+       !panel.contains(
+         event.target
+       )
+       &&
+       !button.contains(
+         event.target
+       )
+     ) {
+       panel.setAttribute(
+         "hidden",
+         ""
+       );
+
+       button.setAttribute(
+         "aria-expanded",
+         "false"
+       );
+     }
+   }
+ );
+})();
+</script>

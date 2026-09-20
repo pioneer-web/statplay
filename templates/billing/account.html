@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+<meta charset="utf-8">
+
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1"
+>
+
+<title>Minha conta | StatPlay</title>
+
+<style>
+:root{
+ --background:#f5f6f8;
+ --surface:#ffffff;
+ --surface-secondary:#f0f2f5;
+ --text:#181c22;
+ --secondary:#737b87;
+ --border:#e4e7ec;
+
+ --primary:#15a46d;
+ --primary-soft:#e6f7f0;
+
+ --radius:16px;
+ --shadow:
+ 0 2px 12px rgba(20,30,45,.06);
+}
+
+*{
+ box-sizing:border-box;
+}
+
+body{
+ margin:0;
+
+ background:
+ var(--background);
+
+ color:var(--text);
+
+ font-family:
+ Roboto,
+ -apple-system,
+ BlinkMacSystemFont,
+ "Segoe UI",
+ sans-serif;
+}
+
+.app{
+ width:100%;
+ max-width:480px;
+ min-height:100vh;
+
+ margin:auto;
+ padding:0 16px 32px;
+}
+
+.title{
+ margin:5px 0 5px;
+
+ font-size:22px;
+ font-weight:800;
+}
+
+.description{
+ margin:0 0 20px;
+
+ color:var(--secondary);
+ font-size:12px;
+ line-height:1.45;
+}
+
+.card{
+ margin-bottom:13px;
+ padding:16px;
+
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+
+ background:var(--surface);
+
+ box-shadow:var(--shadow);
+}
+
+.section-title{
+ margin:23px 0 10px;
+
+ font-size:15px;
+ font-weight:800;
+}
+
+.label{
+ color:var(--secondary);
+ font-size:10px;
+ text-transform:uppercase;
+ font-weight:700;
+}
+
+.email{
+ margin-top:5px;
+
+ font-size:14px;
+ font-weight:700;
+
+ word-break:break-all;
+}
+
+.plan-current{
+ margin-top:12px;
+
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:10px;
+}
+
+.plan-name{
+ font-size:20px;
+ font-weight:850;
+}
+
+.status{
+ padding:6px 9px;
+
+ border-radius:9px;
+
+ background:var(--primary-soft);
+ color:var(--primary);
+
+ font-size:10px;
+ font-weight:800;
+}
+
+.plan-meta{
+ margin-top:10px;
+
+ color:var(--secondary);
+ font-size:11px;
+ line-height:1.5;
+}
+
+.plans{
+ display:flex;
+ flex-direction:column;
+ gap:10px;
+}
+
+.plan{
+ position:relative;
+
+ padding:16px;
+
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+
+ background:var(--surface);
+}
+
+.plan.active{
+ border:2px solid var(--primary);
+}
+
+.plan-header{
+ display:flex;
+ justify-content:space-between;
+ align-items:flex-start;
+ gap:10px;
+}
+
+.plan-title{
+ font-size:17px;
+ font-weight:850;
+}
+
+.price{
+ text-align:right;
+}
+
+.price strong{
+ display:block;
+ font-size:17px;
+}
+
+.price span{
+ color:var(--secondary);
+ font-size:9px;
+}
+
+.feature{
+ display:flex;
+ gap:8px;
+
+ margin-top:9px;
+
+ color:var(--secondary);
+ font-size:11px;
+}
+
+.check{
+ color:var(--primary);
+ font-weight:900;
+}
+
+.plan-action{
+ width:100%;
+ margin-top:14px;
+ padding:11px;
+
+ border:0;
+ border-radius:11px;
+
+ background:
+ var(--surface-secondary);
+
+ color:var(--secondary);
+
+ font-weight:750;
+ font-size:12px;
+}
+
+.plan.active .plan-action{
+ background:var(--primary-soft);
+ color:var(--primary);
+}
+
+.empty{
+ padding:22px;
+
+ border:1px dashed var(--border);
+ border-radius:var(--radius);
+
+ background:var(--surface);
+
+ color:var(--secondary);
+
+ text-align:center;
+ font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<main class="app">
+
+{% include "components/app_header.html" %}
+
+
+<h1 class="title">
+ Minha conta
+</h1>
+
+<p class="description">
+ Consulte seus dados,
+ sua assinatura atual
+ e os planos disponíveis.
+</p>
+
+
+<section class="card">
+
+<div class="label">
+ Conta
+</div>
+
+<div class="email">
+ {{ request.user.email }}
+</div>
+
+</section>
+
+
+<h2 class="section-title">
+ Minha assinatura
+</h2>
+
+
+{% if subscription %}
+
+<section class="card">
+
+<div class="label">
+ Plano atual
+</div>
+
+<div class="plan-current">
+
+<div class="plan-name">
+ {{ subscription.plan.name }}
+</div>
+
+<div class="status">
+ {{ subscription.status|upper }}
+</div>
+
+</div>
+
+
+<div class="plan-meta">
+
+Início:
+{{ subscription.started_at|date:"d/m/Y" }}
+
+{% if subscription.expires_at %}
+
+<br>
+
+Validade:
+{{ subscription.expires_at|date:"d/m/Y" }}
+
+{% endif %}
+
+</div>
+
+</section>
+
+{% else %}
+
+<div class="empty">
+ Nenhuma assinatura ativa
+ encontrada para esta conta.
+</div>
+
+{% endif %}
+
+
+
+<h2 class="section-title">
+ Planos StatPlay
+</h2>
+
+
+<div class="plans">
+
+{% for plan in plans %}
+
+<section
+ class="plan
+ {% if subscription and subscription.plan_id == plan.id %}
+ active
+ {% endif %}
+ "
+>
+
+<div class="plan-header">
+
+<div class="plan-title">
+ {{ plan.name }}
+</div>
+
+
+<div class="price">
+
+<strong>
+ R$ {{ plan.monthly_price }}
+</strong>
+
+<span>
+ por mês
+</span>
+
+</div>
+
+</div>
+
+
+{% if plan.telegram_alerts %}
+
+<div class="feature">
+ <span class="check">✓</span>
+ Alertas pelo Telegram
+</div>
+
+{% endif %}
+
+
+{% if plan.whatsapp_alerts %}
+
+<div class="feature">
+ <span class="check">✓</span>
+ Alertas pelo WhatsApp
+</div>
+
+{% endif %}
+
+
+{% if plan.ai_explanations %}
+
+<div class="feature">
+ <span class="check">✓</span>
+ Explicações das análises
+</div>
+
+{% endif %}
+
+
+{% if subscription and subscription.plan_id == plan.id %}
+
+<button
+ class="plan-action"
+ disabled
+>
+ Plano atual
+</button>
+
+{% else %}
+
+<button
+ class="plan-action"
+ disabled
+>
+ Plano disponível
+</button>
+
+{% endif %}
+
+</section>
+
+{% empty %}
+
+<div class="empty">
+ Os planos ainda não foram
+ configurados no sistema.
+</div>
+
+{% endfor %}
+
+</div>
+
+</main>
+
+</body>
+</html>
