@@ -1,101 +1,267 @@
 <!doctype html>
 <html lang="pt-br">
+
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
 
-<title>Análise StatPlay</title>
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1"
+>
+
+<title>Análise | StatPlay</title>
 
 <style>
-*{box-sizing:border-box}
+:root{
+ --background:#f5f6f8;
+ --surface:#fff;
+ --surface-secondary:#f0f2f5;
+ --text-primary:#181c22;
+ --text-secondary:#737b87;
+ --border:#e4e7ec;
+
+ --primary:#15a46d;
+ --primary-soft:#e6f7f0;
+
+ --info:#3478f6;
+ --info-soft:#eaf1ff;
+
+ --radius:16px;
+ --shadow:
+ 0 2px 12px rgba(20,30,45,.06);
+}
+
+*{
+ box-sizing:border-box;
+}
+
 body{
  margin:0;
- background:#030914;
- color:#e5e7eb;
- font-family:system-ui,-apple-system,sans-serif;
+ background:var(--background);
+ color:var(--text-primary);
+
+ font-family:
+  Roboto,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  sans-serif;
 }
+
 .app{
  width:100%;
  max-width:480px;
  min-height:100vh;
  margin:auto;
- padding:16px;
- background:#07111f;
+ padding:16px 16px 32px;
 }
-a{
- color:#34d399;
+
+.back{
+ display:inline-flex;
+ align-items:center;
+
+ margin:5px 0 18px;
+
+ color:var(--text-secondary);
  text-decoration:none;
+
+ font-size:13px;
+ font-weight:700;
 }
+
 .game{
- font-size:22px;
- font-weight:900;
- margin-top:18px;
-}
-.muted{
- color:#94a3b8;
- font-size:12px;
-}
-.box{
- background:#101b2e;
- border:1px solid #22314a;
- border-radius:15px;
- padding:16px;
- margin:14px 0;
-}
-.hero{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
-}
-.full{
- grid-column:1/-1;
-}
-.prob{
- color:#34d399;
- font-weight:900;
- font-size:34px;
-}
-.value{
  font-size:18px;
- font-weight:850;
+ font-weight:800;
 }
+
+.meta{
+ margin-top:4px;
+
+ color:var(--text-secondary);
+ font-size:11px;
+}
+
+.card{
+ margin-top:14px;
+ padding:16px;
+
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+
+ background:var(--surface);
+
+ box-shadow:var(--shadow);
+}
+
+.label{
+ color:var(--text-secondary);
+ font-size:10px;
+ text-transform:uppercase;
+ font-weight:700;
+}
+
+.market-name{
+ margin-top:5px;
+
+ font-size:15px;
+ font-weight:800;
+}
+
+.hero-grid{
+ display:grid;
+ grid-template-columns:
+  1fr 1fr;
+
+ gap:10px;
+
+ margin-top:14px;
+}
+
+.metric{
+ padding:12px;
+
+ border-radius:12px;
+
+ background:
+ var(--surface-secondary);
+}
+
+.metric.primary{
+ background:
+ var(--primary-soft);
+}
+
+.metric.info{
+ background:
+ var(--info-soft);
+}
+
+.metric strong{
+ display:block;
+
+ margin-top:3px;
+
+ font-size:20px;
+}
+
+.metric.primary strong{
+ color:var(--primary);
+}
+
+.metric.info strong{
+ color:var(--info);
+}
+
+.section-title{
+ margin:0 0 11px;
+
+ font-size:14px;
+}
+
 .row{
  display:flex;
+ align-items:center;
  justify-content:space-between;
- gap:15px;
- padding:8px 0;
- border-bottom:1px solid #22314a;
- font-size:13px;
+
+ gap:12px;
+
+ padding:10px 0;
+
+ border-bottom:
+ 1px solid var(--border);
+
+ font-size:12px;
 }
+
 .row:last-child{
- border:0;
+ border-bottom:0;
 }
+
+.row span{
+ color:var(--text-secondary);
+}
+
 .team-grid{
  display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
+ grid-template-columns:
+  1fr 1fr;
+
+ gap:8px;
 }
+
 .team{
- background:#0b1628;
  padding:12px;
- border-radius:10px;
+
+ border-radius:12px;
+
+ background:
+ var(--surface-secondary);
 }
-.team h3{
- font-size:14px;
- margin-top:0;
+
+.team strong{
+ display:block;
+
+ margin-bottom:8px;
+
+ font-size:12px;
 }
-.small{
+
+.team div{
+ margin:5px 0;
+
+ color:
+ var(--text-secondary);
+
+ font-size:10px;
+}
+
+.text{
+ color:var(--text-secondary);
+
  font-size:12px;
  line-height:1.5;
+}
+
+.method{
+ margin-top:10px;
+ padding:10px;
+
+ border-radius:10px;
+
+ background:
+ var(--surface-secondary);
+
+ color:
+ var(--text-secondary);
+
+ font-size:10px;
+ line-height:1.45;
+}
+
+.disclaimer{
+ margin-top:18px;
+
+ color:
+ var(--text-secondary);
+
+ font-size:9px;
+ line-height:1.45;
+ text-align:center;
 }
 </style>
 </head>
 
 <body>
+
 <main class="app">
 
-<a href="/">← Voltar</a>
+<a
+ class="back"
+ href="{% url 'event_detail' prediction.event.id %}"
+>
+‹ Voltar
+</a>
+
 
 <div class="game">
  {{ prediction.event.home_team }}
@@ -103,88 +269,102 @@ a{
  {{ prediction.event.away_team }}
 </div>
 
-<div class="muted">
+<div class="meta">
  {{ prediction.event.competition.name }}
  ·
  {{ prediction.event.starts_at|date:"d/m H:i" }}
 </div>
 
 
-<section class="box hero">
+<section class="card">
 
-<div class="full">
- <div class="muted">
-   Mercado
- </div>
-
- <strong>
-   {{ prediction.market.name }}
- </strong>
+<div class="label">
+ Mercado
 </div>
 
-<div>
- <div class="prob">
-   {{ prediction.probability }}%
- </div>
-
- <div class="muted">
-   Probabilidade StatPlay
- </div>
+<div class="market-name">
+ {{ prediction.market.name }}
 </div>
 
-<div>
- <div class="value">
-   {{ prediction.fair_odd|default:"—" }}
- </div>
 
- <div class="muted">
-   Odd justa
- </div>
+<div class="hero-grid">
+
+<div class="metric primary">
+
+<div class="label">
+ Probabilidade
 </div>
+
+<strong>
+ {{ prediction.probability }}%
+</strong>
+
+</div>
+
+
+<div class="metric">
+
+<div class="label">
+ Odd justa
+</div>
+
+<strong>
+ {{ prediction.fair_odd|default:"—" }}
+</strong>
+
+</div>
+
 
 {% if explanation.odds %}
 
-<div>
- <div class="value">
-   {{ explanation.odds.odd }}
- </div>
+<div class="metric">
 
- <div class="muted">
-   Odd disponível
- </div>
+<div class="label">
+ Odd de mercado
 </div>
 
-<div>
- <div class="value">
-   {{ explanation.odds.edge }} p.p.
- </div>
+<strong>
+ {{ explanation.odds.odd }}
+</strong>
 
- <div class="muted">
-   Diferença modelo/mercado
- </div>
+</div>
+
+
+<div class="metric info">
+
+<div class="label">
+ Diferença
+</div>
+
+<strong>
+ {{ explanation.odds.edge }} p.p.
+</strong>
+
 </div>
 
 {% endif %}
 
+</div>
+
 </section>
 
 
-<section class="box">
+<section class="card">
 
-<h2>
- Por que
- {{ prediction.probability }}%?
+<h2 class="section-title">
+Por que {{ prediction.probability }}%?
 </h2>
 
-<p class="small">
+<div class="text">
  {{ explanation.conclusion }}
-</p>
+</div>
 
 {% if explanation.method %}
-<p class="small muted">
- Método:
+
+<div class="method">
  {{ explanation.method }}
-</p>
+</div>
+
 {% endif %}
 
 </section>
@@ -192,20 +372,24 @@ a{
 
 {% if explanation.analysis_rows %}
 
-<section class="box">
+<section class="card">
 
-<h2>Variáveis deste mercado</h2>
+<h2 class="section-title">
+Variáveis analisadas
+</h2>
 
 {% for item in explanation.analysis_rows %}
 
 <div class="row">
- <span>
-   {{ item.label }}
- </span>
 
- <strong>
-   {{ item.value }}
- </strong>
+<span>
+ {{ item.label }}
+</span>
+
+<strong>
+ {{ item.value }}
+</strong>
+
 </div>
 
 {% endfor %}
@@ -215,162 +399,114 @@ a{
 {% endif %}
 
 
-<section class="box">
+<section class="card">
 
-<h2>Histórico recente</h2>
-
-<div class="team-grid">
-
-<div class="team">
- <h3>
-   {{ prediction.event.home_team }}
- </h3>
-
- <div class="small">
-   Jogos:
-   {{ explanation.home_form.matches }}
- </div>
-
- <div class="small">
-   Gols:
-   {{ explanation.home_form.goals_for|default:"—" }}
- </div>
-
- <div class="small">
-   Sofridos:
-   {{ explanation.home_form.goals_against|default:"—" }}
- </div>
-
- <div class="small">
-   xG:
-   {{ explanation.home_form.xg|default:"—" }}
- </div>
-
- <div class="small">
-   Chutes no alvo:
-   {{ explanation.home_form.shots_on_target|default:"—" }}
- </div>
-
- <div class="small">
-   Escanteios:
-   {{ explanation.home_form.corners|default:"—" }}
- </div>
-
- <div class="small">
-   Cartões:
-   {{ explanation.home_form.cards|default:"—" }}
- </div>
-</div>
-
-
-<div class="team">
- <h3>
-   {{ prediction.event.away_team }}
- </h3>
-
- <div class="small">
-   Jogos:
-   {{ explanation.away_form.matches }}
- </div>
-
- <div class="small">
-   Gols:
-   {{ explanation.away_form.goals_for|default:"—" }}
- </div>
-
- <div class="small">
-   Sofridos:
-   {{ explanation.away_form.goals_against|default:"—" }}
- </div>
-
- <div class="small">
-   xG:
-   {{ explanation.away_form.xg|default:"—" }}
- </div>
-
- <div class="small">
-   Chutes no alvo:
-   {{ explanation.away_form.shots_on_target|default:"—" }}
- </div>
-
- <div class="small">
-   Escanteios:
-   {{ explanation.away_form.corners|default:"—" }}
- </div>
-
- <div class="small">
-   Cartões:
-   {{ explanation.away_form.cards|default:"—" }}
- </div>
-</div>
-
-</div>
-
-</section>
-
-
-{% if explanation.home_lineup.available or explanation.away_lineup.available %}
-
-<section class="box">
-
-<h2>Escalações</h2>
+<h2 class="section-title">
+Forma recente
+</h2>
 
 <div class="team-grid">
 
 <div class="team">
- <h3>
-   {{ prediction.event.home_team }}
- </h3>
 
- <div class="small">
-   {{ explanation.home_lineup.status }}
- </div>
+<strong>
+ {{ prediction.event.home_team }}
+</strong>
 
- {% for p in explanation.home_lineup.attackers %}
- <div class="small">
-   {{ p.name }}
-
-   {% if p.goals90 != None %}
-     · {{ p.goals90 }} gol/90
-   {% endif %}
- </div>
- {% endfor %}
+<div>
+ Jogos:
+ {{ explanation.home_form.matches }}
 </div>
+
+<div>
+ Gols:
+ {{ explanation.home_form.goals_for|default:"—" }}
+</div>
+
+<div>
+ Sofridos:
+ {{ explanation.home_form.goals_against|default:"—" }}
+</div>
+
+<div>
+ xG:
+ {{ explanation.home_form.xg|default:"—" }}
+</div>
+
+<div>
+ Chutes no alvo:
+ {{ explanation.home_form.shots_on_target|default:"—" }}
+</div>
+
+<div>
+ Escanteios:
+ {{ explanation.home_form.corners|default:"—" }}
+</div>
+
+<div>
+ Cartões:
+ {{ explanation.home_form.cards|default:"—" }}
+</div>
+
+</div>
+
 
 <div class="team">
- <h3>
-   {{ prediction.event.away_team }}
- </h3>
 
- <div class="small">
-   {{ explanation.away_lineup.status }}
- </div>
+<strong>
+ {{ prediction.event.away_team }}
+</strong>
 
- {% for p in explanation.away_lineup.attackers %}
- <div class="small">
-   {{ p.name }}
+<div>
+ Jogos:
+ {{ explanation.away_form.matches }}
+</div>
 
-   {% if p.goals90 != None %}
-     · {{ p.goals90 }} gol/90
-   {% endif %}
- </div>
- {% endfor %}
+<div>
+ Gols:
+ {{ explanation.away_form.goals_for|default:"—" }}
+</div>
+
+<div>
+ Sofridos:
+ {{ explanation.away_form.goals_against|default:"—" }}
+</div>
+
+<div>
+ xG:
+ {{ explanation.away_form.xg|default:"—" }}
+</div>
+
+<div>
+ Chutes no alvo:
+ {{ explanation.away_form.shots_on_target|default:"—" }}
+</div>
+
+<div>
+ Escanteios:
+ {{ explanation.away_form.corners|default:"—" }}
+</div>
+
+<div>
+ Cartões:
+ {{ explanation.away_form.cards|default:"—" }}
+</div>
+
 </div>
 
 </div>
 
 </section>
 
-{% endif %}
 
-
-<section class="box small muted">
- O percentual é uma estimativa estatística
- produzida com os dados disponíveis antes
- da partida. Não representa garantia de
- resultado.
-</section>
+<div class="disclaimer">
+As probabilidades são estimativas
+estatísticas produzidas com os dados
+disponíveis antes da partida.
+Não representam garantia de resultado.
+</div>
 
 </main>
+
 </body>
 </html>

@@ -2,19 +2,61 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
+
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1"
+>
 
 <title>StatPlay</title>
 
 <style>
-*{box-sizing:border-box}
+:root{
+ --background:#f5f6f8;
+ --surface:#ffffff;
+ --surface-secondary:#f0f2f5;
+ --text-primary:#181c22;
+ --text-secondary:#737b87;
+ --border:#e4e7ec;
 
+ --primary:#15a46d;
+ --primary-soft:#e6f7f0;
+
+ --info:#3478f6;
+ --info-soft:#eaf1ff;
+
+ --success:#15a46d;
+ --warning:#f2a41b;
+ --danger:#e05252;
+
+ --radius-sm:10px;
+ --radius-md:16px;
+ --radius-lg:20px;
+
+ --shadow:
+ 0 2px 12px rgba(20,30,45,.06);
+}
+
+*{
+ box-sizing:border-box;
+}
+
+html,
 body{
  margin:0;
- background:#030914;
- color:#e5e7eb;
- font-family:system-ui,-apple-system,sans-serif;
+ padding:0;
+ background:var(--background);
+ color:var(--text-primary);
+ font-family:
+  Roboto,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  sans-serif;
+}
+
+body{
+ min-height:100vh;
 }
 
 .app{
@@ -22,391 +64,719 @@ body{
  max-width:480px;
  min-height:100vh;
  margin:auto;
- padding:15px;
- background:#07111f;
+ padding:0 16px 32px;
 }
 
-.top{
- display:flex;
- justify-content:space-between;
- align-items:center;
+.header{
  position:sticky;
  top:0;
- z-index:20;
- background:#07111f;
- padding:8px 0 12px;
+ z-index:30;
+
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+
+ margin:0 -16px;
+ padding:17px 16px 13px;
+
+ background:
+ rgba(245,246,248,.96);
+
+ backdrop-filter:
+ blur(12px);
 }
 
 .brand{
- font-size:27px;
- font-weight:900;
+ display:flex;
+ flex-direction:column;
+ gap:2px;
 }
 
-.brand span{color:#34d399}
-
-.muted{
- color:#94a3b8;
- font-size:12px;
+.logo{
+ font-size:25px;
+ line-height:1;
+ font-weight:800;
+ letter-spacing:-.7px;
 }
 
-button{
- background:#172338;
- color:white;
- border:0;
- border-radius:9px;
- padding:9px 13px;
+.logo span{
+ color:var(--primary);
 }
 
-.intro{
- color:#94a3b8;
+.subtitle{
+ color:var(--text-secondary);
+ font-size:11px;
+}
+
+.logout{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+
+ width:38px;
+ height:38px;
+
+ border:1px solid var(--border);
+ border-radius:12px;
+
+ background:var(--surface);
+ color:var(--text-primary);
+
+ cursor:pointer;
+}
+
+.context{
+ margin-top:14px;
+}
+
+.context h1{
+ margin:0;
+ font-size:22px;
+ line-height:1.25;
+ letter-spacing:-.4px;
+}
+
+.context p{
+ margin:7px 0 0;
+ color:var(--text-secondary);
  font-size:13px;
- line-height:1.5;
- margin:17px 0;
+ line-height:1.45;
 }
 
 .filters{
  display:grid;
- grid-template-columns:1fr 1fr 1fr;
- gap:7px;
- margin:16px 0 25px;
+ grid-template-columns:
+  1fr 1fr 1fr;
+
+ gap:8px;
+ margin:20px 0 26px;
 }
 
-.filters a{
- text-align:center;
- text-decoration:none;
- color:#e5e7eb;
- background:#101b2e;
- padding:10px 5px;
- border-radius:10px;
- border:1px solid #22314a;
- font-size:13px;
- font-weight:750;
-}
-
-.filters a.active{
- background:#34d399;
- color:#07111f;
- border-color:#34d399;
-}
-
-.day{
+.filter{
  display:flex;
- justify-content:space-between;
  align-items:center;
- margin:24px 0 9px;
-}
+ justify-content:center;
 
-.day h2{
- margin:0;
- font-size:19px;
-}
+ min-height:42px;
 
-.date{
- color:#34d399;
- font-weight:800;
-}
+ padding:8px 7px;
 
-.game{
- background:#101b2e;
- border:1px solid #22314a;
- border-radius:16px;
- margin:11px 0;
- overflow:hidden;
-}
+ border:1px solid var(--border);
+ border-radius:12px;
 
-.game-head{
- display:block;
- padding:15px;
+ background:var(--surface);
+
+ color:var(--text-secondary);
  text-decoration:none;
- color:inherit;
- border-bottom:1px solid #22314a;
+
+ font-size:12px;
+ font-weight:700;
+
+ transition:.15s;
 }
 
-.teams{
- font-weight:850;
+.filter.active{
+ border-color:var(--primary);
+ background:var(--primary);
+ color:#fff;
+}
+
+.section{
+ margin-top:25px;
+}
+
+.section-head{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+
+ margin-bottom:11px;
+}
+
+.section-title{
+ display:flex;
+ align-items:center;
+ gap:8px;
+}
+
+.section-title h2{
+ margin:0;
  font-size:17px;
 }
 
-.competition{
- margin-top:4px;
- color:#94a3b8;
+.date{
+ color:var(--text-secondary);
  font-size:12px;
 }
 
-.group-title{
- padding:11px 15px 5px;
- color:#94a3b8;
+.dot{
+ width:8px;
+ height:8px;
+ border-radius:50%;
+ background:var(--primary);
+}
+
+.game-card{
+ display:block;
+
+ margin-bottom:11px;
+ padding:15px;
+
+ border:1px solid var(--border);
+ border-radius:var(--radius-md);
+
+ background:var(--surface);
+
+ box-shadow:var(--shadow);
+
+ color:inherit;
+ text-decoration:none;
+}
+
+.game-top{
+ display:flex;
+ align-items:flex-start;
+ justify-content:space-between;
+ gap:14px;
+}
+
+.competition{
+ margin-bottom:10px;
+
+ color:var(--text-secondary);
  font-size:11px;
- text-transform:uppercase;
+ font-weight:600;
+}
+
+.time{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+
+ padding:5px 8px;
+
+ border-radius:8px;
+
+ background:
+ var(--surface-secondary);
+
+ color:var(--text-secondary);
+
+ font-size:11px;
+ font-weight:700;
+}
+
+.teams{
+ display:flex;
+ flex-direction:column;
+ gap:7px;
+
+ margin-top:2px;
+}
+
+.team{
+ font-size:15px;
+ font-weight:750;
+}
+
+.card-bottom{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+
+ gap:10px;
+
+ margin-top:15px;
+ padding-top:12px;
+
+ border-top:
+ 1px solid var(--border);
+}
+
+.badges{
+ display:flex;
+ flex-wrap:wrap;
+ gap:6px;
+}
+
+.badge{
+ padding:5px 8px;
+
+ border-radius:8px;
+
+ background:
+ var(--surface-secondary);
+
+ color:
+ var(--text-secondary);
+
+ font-size:10px;
+ font-weight:700;
+}
+
+.badge.primary{
+ background:
+ var(--primary-soft);
+
+ color:var(--primary);
+}
+
+.badge.info{
+ background:
+ var(--info-soft);
+
+ color:var(--info);
+}
+
+.open{
+ display:flex;
+ align-items:center;
+ gap:4px;
+
+ color:var(--primary);
+ font-size:11px;
  font-weight:800;
 }
 
-.market{
- display:grid;
- grid-template-columns:1fr auto auto;
- gap:9px;
- align-items:center;
- padding:10px 15px;
- text-decoration:none;
- color:inherit;
-}
-
-.market:active{
- background:#16243a;
-}
-
-.market-name{
- font-size:13px;
-}
-
-.prob{
- color:#34d399;
- font-weight:900;
- font-size:16px;
-}
-
-.odd{
- font-size:12px;
- color:#cbd5e1;
- min-width:42px;
- text-align:right;
-}
-
-.edge{
- color:#38bdf8;
- font-size:10px;
-}
-
 .empty{
- background:#0d1829;
- color:#94a3b8;
- padding:17px;
- border-radius:13px;
- font-size:13px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ text-align:center;
+
+ padding:30px 22px;
+
+ border:1px dashed
+ var(--border);
+
+ border-radius:
+ var(--radius-md);
+
+ background:
+ var(--surface);
+}
+
+.empty-icon{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+
+ width:48px;
+ height:48px;
+
+ margin-bottom:12px;
+
+ border-radius:15px;
+
+ background:
+ var(--surface-secondary);
+
+ color:
+ var(--text-secondary);
+
+ font-size:20px;
+}
+
+.empty strong{
+ font-size:14px;
+}
+
+.empty p{
+ margin:6px 0 14px;
+
+ color:
+ var(--text-secondary);
+
+ font-size:12px;
+ line-height:1.45;
+}
+
+.empty a{
+ padding:8px 12px;
+
+ border-radius:9px;
+
+ background:
+ var(--primary-soft);
+
+ color:
+ var(--primary);
+
+ text-decoration:none;
+
+ font-size:11px;
+ font-weight:800;
 }
 
 .footer-note{
- color:#64748b;
- font-size:11px;
- line-height:1.4;
- margin:22px 0;
+ margin-top:25px;
+
+ color:
+ var(--text-secondary);
+
+ font-size:10px;
+ line-height:1.45;
+ text-align:center;
 }
 
-@media(min-width:481px){
+@media(min-width:520px){
  .app{
-   box-shadow:0 0 45px rgba(0,0,0,.5);
+  border-left:
+   1px solid var(--border);
+
+  border-right:
+   1px solid var(--border);
  }
 }
 </style>
 </head>
 
 <body>
+
 <main class="app">
 
-<div class="top">
- <div>
-   <div class="brand">
-     Stat<span>Play</span>
-   </div>
-   <div class="muted">
-     Inteligência esportiva
-   </div>
+<header class="header">
+
+<div class="brand">
+ <div class="logo">
+  Stat<span>Play</span>
  </div>
 
- <form method="post"
-       action="/logout/">
-   {% csrf_token %}
-   <button>Sair</button>
- </form>
+ <div class="subtitle">
+  Inteligência esportiva
+ </div>
 </div>
 
-<div class="intro">
- Mercados dos jogos de hoje
- ({{ today|date:"d/m" }})
- e amanhã
- ({{ tomorrow|date:"d/m" }}).
- Cada mercado possui seu próprio
- cálculo de probabilidade.
-</div>
+<form
+ method="post"
+ action="/logout/"
+>
+{% csrf_token %}
 
-<div class="filters">
- <a href="?f=all"
-    class="{% if mode == 'all' %}active{% endif %}">
-   Todos
- </a>
+<button
+ class="logout"
+ aria-label="Sair"
+>
+↗
+</button>
 
- <a href="?f=60"
-    class="{% if mode == '60' %}active{% endif %}">
-   60%+
- </a>
+</form>
 
- <a href="?f=value"
-    class="{% if mode == 'value' %}active{% endif %}">
-   Com valor
- </a>
-</div>
+</header>
 
 
-<div class="day">
+<section class="context">
+
+<h1>
+Partidas
+</h1>
+
+<p>
+Escolha um jogo para visualizar
+mercados, probabilidades,
+odds justas e análises.
+</p>
+
+</section>
+
+
+<nav class="filters">
+
+<a
+ href="?f=all"
+ class="filter
+ {% if filter_mode == 'all' %}
+ active
+ {% endif %}
+ "
+>
+Todos
+</a>
+
+<a
+ href="?f=60"
+ class="filter
+ {% if filter_mode == '60' %}
+ active
+ {% endif %}
+ "
+>
+60%+
+</a>
+
+<a
+ href="?f=value"
+ class="filter
+ {% if filter_mode == 'value' %}
+ active
+ {% endif %}
+ "
+>
+Com valor
+</a>
+
+</nav>
+
+
+<section class="section">
+
+<div class="section-head">
+
+<div class="section-title">
+ <span class="dot"></span>
  <h2>Hoje</h2>
- <span class="date">
-   {{ today|date:"d/m" }}
- </span>
 </div>
+
+<span class="date">
+ {{ today|date:"d/m" }}
+</span>
+
+</div>
+
 
 {% for game in today_games %}
 
-<section class="game">
+<a
+ class="game-card"
+ href="{% url 'event_detail' game.event.id %}"
+>
 
-<a class="game-head"
-   href="{% url 'event_detail' game.event.id %}">
- <div class="teams">
-   {{ game.event.home_team }}
-   ×
-   {{ game.event.away_team }}
- </div>
+<div class="game-top">
 
- <div class="competition">
-   {{ game.event.competition.name }}
-   ·
-   {{ game.event.starts_at|date:"H:i" }}
- </div>
-</a>
+<div>
 
-{% for group in game.groups %}
-
-<div class="group-title">
- {{ group.label }}
+<div class="competition">
+ {{ game.event.competition.name }}
 </div>
 
-{% for p in group.items %}
+<div class="teams">
 
-<a class="market"
-   href="{% url 'prediction_detail' p.id %}">
+<div class="team">
+ {{ game.event.home_team }}
+</div>
 
- <div class="market-name">
-   {{ p.market.name }}
+<div class="team">
+ {{ game.event.away_team }}
+</div>
 
-   {% if p.edge != None and p.edge >= 3 %}
-   <div class="edge">
-     diferença +{{ p.edge }} p.p.
-   </div>
-   {% endif %}
- </div>
+</div>
 
- <div class="prob">
-   {{ p.probability }}%
- </div>
+</div>
 
- <div class="odd">
-   {% if p.best_odd %}
-     odd {{ p.best_odd }}
-   {% else %}
-     —
-   {% endif %}
- </div>
+
+<div class="time">
+ ◷
+ {{ game.event.starts_at|date:"H:i" }}
+</div>
+
+</div>
+
+
+<div class="card-bottom">
+
+<div class="badges">
+
+<span class="badge">
+ {{ game.markets_count }}
+ mercados
+</span>
+
+{% if game.above_60_count %}
+
+<span class="badge primary">
+ {{ game.above_60_count }}
+ com 60%+
+</span>
+
+{% endif %}
+
+
+{% if filter_mode == "value" %}
+
+<span class="badge info">
+ {{ game.value_count }}
+ com valor
+</span>
+
+{% endif %}
+
+</div>
+
+
+<div class="open">
+ Ver
+ <span>›</span>
+</div>
+
+</div>
 
 </a>
-
-{% endfor %}
-{% endfor %}
-
-</section>
 
 {% empty %}
 
 <div class="empty">
- Nenhum mercado encontrado
- para os jogos restantes de hoje
- neste filtro.
+
+<div class="empty-icon">
+ ○
+</div>
+
+<strong>
+Nenhuma partida encontrada
+</strong>
+
+<p>
+Não há jogos com análises
+disponíveis neste filtro
+para hoje.
+</p>
+
+{% if filter_mode != "all" %}
+<a href="?f=all">
+ Ver todas
+</a>
+{% endif %}
+
 </div>
 
 {% endfor %}
 
+</section>
 
-<div class="day">
+
+
+<section class="section">
+
+<div class="section-head">
+
+<div class="section-title">
+ <span class="dot"></span>
  <h2>Amanhã</h2>
- <span class="date">
-   {{ tomorrow|date:"d/m" }}
- </span>
 </div>
+
+<span class="date">
+ {{ tomorrow|date:"d/m" }}
+</span>
+
+</div>
+
 
 {% for game in tomorrow_games %}
 
-<section class="game">
+<a
+ class="game-card"
+ href="{% url 'event_detail' game.event.id %}"
+>
 
-<a class="game-head"
-   href="{% url 'event_detail' game.event.id %}">
- <div class="teams">
-   {{ game.event.home_team }}
-   ×
-   {{ game.event.away_team }}
- </div>
+<div class="game-top">
 
- <div class="competition">
-   {{ game.event.competition.name }}
-   ·
-   {{ game.event.starts_at|date:"H:i" }}
- </div>
-</a>
+<div>
 
-{% for group in game.groups %}
-
-<div class="group-title">
- {{ group.label }}
+<div class="competition">
+ {{ game.event.competition.name }}
 </div>
 
-{% for p in group.items %}
+<div class="teams">
 
-<a class="market"
-   href="{% url 'prediction_detail' p.id %}">
+<div class="team">
+ {{ game.event.home_team }}
+</div>
 
- <div class="market-name">
-   {{ p.market.name }}
+<div class="team">
+ {{ game.event.away_team }}
+</div>
 
-   {% if p.edge != None and p.edge >= 3 %}
-   <div class="edge">
-     diferença +{{ p.edge }} p.p.
-   </div>
-   {% endif %}
- </div>
+</div>
 
- <div class="prob">
-   {{ p.probability }}%
- </div>
+</div>
 
- <div class="odd">
-   {% if p.best_odd %}
-     odd {{ p.best_odd }}
-   {% else %}
-     —
-   {% endif %}
- </div>
+
+<div class="time">
+ ◷
+ {{ game.event.starts_at|date:"H:i" }}
+</div>
+
+</div>
+
+
+<div class="card-bottom">
+
+<div class="badges">
+
+<span class="badge">
+ {{ game.markets_count }}
+ mercados
+</span>
+
+{% if game.above_60_count %}
+
+<span class="badge primary">
+ {{ game.above_60_count }}
+ com 60%+
+</span>
+
+{% endif %}
+
+
+{% if filter_mode == "value" %}
+
+<span class="badge info">
+ {{ game.value_count }}
+ com valor
+</span>
+
+{% endif %}
+
+</div>
+
+
+<div class="open">
+ Ver
+ <span>›</span>
+</div>
+
+</div>
 
 </a>
-
-{% endfor %}
-{% endfor %}
-
-</section>
 
 {% empty %}
 
 <div class="empty">
- Nenhum mercado encontrado
- para amanhã neste filtro.
+
+<div class="empty-icon">
+ ○
+</div>
+
+<strong>
+Nenhuma partida encontrada
+</strong>
+
+<p>
+As análises disponíveis
+para amanhã aparecerão aqui.
+</p>
+
+{% if filter_mode != "all" %}
+<a href="?f=all">
+ Ver todas
+</a>
+{% endif %}
+
 </div>
 
 {% endfor %}
 
+</section>
+
+
 <div class="footer-note">
- “Com valor” mostra diferenças de pelo menos
- {{ value_edge }} pontos percentuais entre
- a estimativa StatPlay e a probabilidade
- de mercado disponível. Não representa
- garantia de resultado ou rentabilidade.
+
+As probabilidades são estimativas
+estatísticas e não representam
+garantia de resultado.
+
 </div>
 
 </main>
+
 </body>
 </html>

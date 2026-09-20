@@ -1,129 +1,338 @@
 <!doctype html>
 <html lang="pt-br">
+
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
 
-<title>Jogo | StatPlay</title>
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1"
+>
+
+<title>Partida | StatPlay</title>
 
 <style>
-*{box-sizing:border-box}
+:root{
+ --background:#f5f6f8;
+ --surface:#fff;
+ --surface-secondary:#f0f2f5;
+ --text-primary:#181c22;
+ --text-secondary:#737b87;
+ --border:#e4e7ec;
+
+ --primary:#15a46d;
+ --primary-soft:#e6f7f0;
+
+ --info:#3478f6;
+ --info-soft:#eaf1ff;
+
+ --radius:16px;
+
+ --shadow:
+ 0 2px 12px rgba(20,30,45,.06);
+}
+
+*{
+ box-sizing:border-box;
+}
+
 body{
  margin:0;
- background:#030914;
- color:#e5e7eb;
- font-family:system-ui,-apple-system,sans-serif;
+ background:var(--background);
+ color:var(--text-primary);
+ font-family:
+  Roboto,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  sans-serif;
 }
+
 .app{
  width:100%;
  max-width:480px;
  min-height:100vh;
  margin:auto;
- padding:16px;
- background:#07111f;
+ padding:16px 16px 32px;
 }
-a{
- color:#34d399;
+
+.back{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+
+ margin:5px 0 20px;
+
+ color:var(--text-secondary);
  text-decoration:none;
+
+ font-size:13px;
+ font-weight:700;
 }
-.header{
- margin:20px 0;
+
+.hero{
+ padding:18px;
+
+ border:1px solid var(--border);
+ border-radius:18px;
+
+ background:var(--surface);
+
+ box-shadow:var(--shadow);
 }
+
+.competition{
+ color:var(--text-secondary);
+ font-size:11px;
+ font-weight:700;
+}
+
 .teams{
- font-size:23px;
- font-weight:900;
+ display:flex;
+ flex-direction:column;
+ gap:8px;
+
+ margin:12px 0;
 }
-.muted{
- color:#94a3b8;
+
+.team{
+ font-size:20px;
+ font-weight:800;
+ letter-spacing:-.25px;
+}
+
+.meta{
+ display:flex;
+ align-items:center;
+ gap:7px;
+
+ color:var(--text-secondary);
  font-size:12px;
 }
-.box{
- background:#101b2e;
- border:1px solid #22314a;
- border-radius:15px;
- margin:13px 0;
+
+.section{
+ margin-top:18px;
+}
+
+.section h2{
+ margin:0 0 9px 3px;
+
+ font-size:14px;
+ font-weight:800;
+}
+
+.card{
  overflow:hidden;
+
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+
+ background:var(--surface);
+
+ box-shadow:var(--shadow);
 }
-.title{
- padding:13px 15px;
- font-weight:850;
- border-bottom:1px solid #22314a;
-}
+
 .market{
  display:grid;
- grid-template-columns:1fr auto auto;
- gap:10px;
- padding:12px 15px;
- border-bottom:1px solid #18263a;
+ grid-template-columns:
+  minmax(0,1fr)
+  60px
+  52px
+  52px;
+
+ gap:6px;
+ align-items:center;
+
+ min-height:58px;
+
+ padding:10px 12px;
+
+ border-bottom:
+ 1px solid var(--border);
+
  color:inherit;
+ text-decoration:none;
 }
-.prob{
- color:#34d399;
- font-weight:900;
+
+.market:last-child{
+ border-bottom:0;
 }
-.odd{
+
+.market-name{
+ overflow:hidden;
+
  font-size:12px;
+ font-weight:650;
+ line-height:1.3;
+}
+
+.metric{
+ text-align:right;
+}
+
+.metric strong{
+ display:block;
+ font-size:13px;
+}
+
+.metric small{
+ display:block;
+
+ margin-top:2px;
+
+ color:var(--text-secondary);
+ font-size:8px;
+ text-transform:uppercase;
+}
+
+.prob strong{
+ color:var(--primary);
+ font-size:15px;
+}
+
+.chevron{
+ color:var(--text-secondary);
+ font-size:18px;
+ text-align:right;
+}
+
+.no-odd{
+ color:var(--text-secondary);
+}
+
+.note{
+ margin-top:20px;
+
+ color:var(--text-secondary);
+ font-size:10px;
+ line-height:1.45;
+ text-align:center;
 }
 </style>
 </head>
 
 <body>
+
 <main class="app">
 
-<a href="/">← Voltar</a>
+<a
+ class="back"
+ href="/"
+>
+‹ Partidas
+</a>
 
-<div class="header">
- <div class="teams">
-   {{ event.home_team }}
-   ×
-   {{ event.away_team }}
- </div>
 
- <div class="muted">
-   {{ event.competition.name }}
-   ·
-   {{ event.starts_at|date:"d/m H:i" }}
- </div>
+<section class="hero">
+
+<div class="competition">
+ {{ event.competition.name }}
 </div>
+
+<div class="teams">
+
+<div class="team">
+ {{ event.home_team }}
+</div>
+
+<div class="team">
+ {{ event.away_team }}
+</div>
+
+</div>
+
+<div class="meta">
+ ◷
+ {{ event.starts_at|date:"d/m · H:i" }}
+</div>
+
+</section>
+
 
 {% for group in groups %}
 
-<section class="box">
+<section class="section">
 
-<div class="title">
+<h2>
  {{ group.label }}
-</div>
+</h2>
+
+<div class="card">
 
 {% for p in group.items %}
 
-<a class="market"
-   href="{% url 'prediction_detail' p.id %}">
+<a
+ class="market"
+ href="{% url 'prediction_detail' p.id %}"
+>
 
- <div>
-   {{ p.market.name }}
- </div>
+<div class="market-name">
+ {{ p.market.name }}
+</div>
 
- <div class="prob">
-   {{ p.probability }}%
- </div>
 
- <div class="odd">
-   {% if p.best_odd %}
-     {{ p.best_odd }}
-   {% else %}
-     —
-   {% endif %}
- </div>
+<div class="metric prob">
+
+<strong>
+ {{ p.probability }}%
+</strong>
+
+<small>
+ StatPlay
+</small>
+
+</div>
+
+
+<div class="metric">
+
+<strong>
+ {{ p.fair_odd|default:"—" }}
+</strong>
+
+<small>
+ justa
+</small>
+
+</div>
+
+
+<div class="metric">
+
+<strong
+ class="{% if not p.best_odd %}no-odd{% endif %}"
+>
+ {% if p.best_odd %}
+  {{ p.best_odd }}
+ {% else %}
+  —
+ {% endif %}
+</strong>
+
+<small>
+ mercado
+</small>
+
+</div>
 
 </a>
 
 {% endfor %}
 
+</div>
+
 </section>
 
 {% endfor %}
 
+
+<div class="note">
+Toque em um mercado para entender
+como o StatPlay chegou àquela
+probabilidade.
+</div>
+
 </main>
+
 </body>
 </html>

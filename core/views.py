@@ -1,12 +1,8 @@
 from datetime import timedelta
 
-from django.contrib.auth.decorators import (
-    login_required,
-)
-from django.shortcuts import (
-    get_object_or_404,
-    render,
-)
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from core.services.prediction_explanation import (
@@ -36,21 +32,12 @@ CATEGORY_ORDER = {
 }
 
 
-CATEGORY_LABEL = {
-    "result":
-        "Resultado",
-
-    "double_chance":
-        "Dupla chance",
-
-    "goals":
-        "Gols",
-
-    "corners":
-        "Escanteios",
-
-    "cards":
-        "Cartões",
+CATEGORY_LABELS = {
+    "result": "Resultado",
+    "double_chance": "Dupla chance",
+    "goals": "Gols",
+    "corners": "Escanteios",
+    "cards": "Cartões",
 }
 
 
@@ -61,201 +48,184 @@ def current_model():
             name="StatPlay Core",
             version=MODEL_VERSION,
         )
-        .order_by(
-            "-id"
-        )
+        .order_by("-id")
         .first()
     )
 
 
-def decorate(prediction):
-    price = best_odd(
-        prediction
-    )
+def decorate_prediction(prediction):
+    price = best_odd(prediction)
 
     prediction.best_odd = None
-    prediction.market_probability = None
     prediction.edge = None
+    prediction.market_probability = None
 
     if price:
-        prediction.best_odd = (
-            price["odd"]
-        )
-
-        prediction.edge = (
-            price["edge"]
-        )
+        prediction.best_odd = price["odd"]
+        prediction.edge = price["edge"]
 
         prediction.market_probability = (
-            price[
-                "market_probability"
-            ]
-            or price[
-                "raw_implied"
-            ]
+            price["market_probability"]
+            or price["raw_implied"]
         )
 
     return prediction
 
 
-def should_show(
-    prediction,
-    mode,
-):
-    if mode == "60":
-        return (
-            float(
-                prediction.probability
-            )
-            >= 60
-        )
-
-    if mode == "value":
-        return (
-            prediction.edge
-            is not None
-            and prediction.edge
-            >= VALUE_EDGE
-        )
-
-    return True
+def competition_allowed(event):
+    return is_target_competition(
+        event.competition.name,
+        event.competition.country,
+    )
 
 
-def group_markets(
-    predictions,
-):
-    grouped = {}
+def event_is_visible(event):
+    today = timezone.localdate()
+    tomorrow = today + timedelta(days=1)
+
+    event_day = timezone.localtime(
+        event.starts_at
+    ).date()
+
+    return (
+        event_day in (today, tomorrow)
+        and competition_allowed(event)
+    )
+
+
+def group_markets(predictions):
+    groups = {}
 
     for prediction in predictions:
-        category = (
-            prediction.market.category
-        )
+        category = prediction.market.category
 
-        grouped.setdefault(
+        groups.setdefault(
             category,
             [],
-        ).append(
-            prediction
-        )
+        ).append(prediction)
 
-    output = []
+    result = []
 
     for category, items in sorted(
-        grouped.items(),
-        key=lambda item:
-            CATEGORY_ORDER.get(
-                item[0],
-                99,
-            ),
+        groups.items(),
+        key=lambda item: CATEGORY_ORDER.get(
+            item[0],
+            99,
+        ),
     ):
-        output.append({
-            "category":
-                category,
-
-            "label":
-                CATEGORY_LABEL.get(
+        result.append(
+            {
+                "category": category,
+                "label": CATEGORY_LABELS.get(
                     category,
                     category.title(),
                 ),
+                "items": items,
+            }
+        )
 
-            "items":
-                items,
-        })
-
-    return output
+    return result
 
 
-def group_games(
-    predictions,
-    mode,
-):
+def game_cards(predictions, filter_mode):
     games = {}
 
     for prediction in predictions:
-        competition = (
-            prediction.event.competition
-        )
+        event = prediction.event
 
-        if not is_target_competition(
-            competition.name,
-            competition.country,
-        ):
+        if not competition_allowed(event):
             continue
 
-        decorate(
-            prediction
+        games.setdefault(
+            event.id,
+            {
+                "event": event,
+                "predictions": [],
+            },
         )
 
-        if not should_show(
-            prediction,
-            mode,
-        ):
-            continue
-
-        event_id = (
-            prediction.event_id
-        )
-
-        if event_id not in games:
-            games[event_id] = {
-                "event":
-                    prediction.event,
-
-                "predictions":
-                    [],
-            }
-
-        games[event_id][
+        games[event.id][
             "predictions"
-        ].append(
-            prediction
-        )
+        ].append(prediction)
 
-    output = []
+    result = []
 
     for game in games.values():
-        game["groups"] = (
-            group_markets(
-                game[
-                    "predictions"
-                ]
-            )
+        rows = game["predictions"]
+
+        above_60 = [
+            p
+            for p in rows
+            if float(p.probability) >= 60
+        ]
+
+        value_rows = []
+
+        if filter_mode == "value":
+            for prediction in rows:
+                decorate_prediction(
+                    prediction
+                )
+
+                if (
+                    prediction.edge is not None
+                    and prediction.edge >= VALUE_EDGE
+                ):
+                    value_rows.append(
+                        prediction
+                    )
+
+            if not value_rows:
+                continue
+
+        if (
+            filter_mode == "60"
+            and not above_60
+        ):
+            continue
+
+        game["markets_count"] = len(rows)
+        game["above_60_count"] = len(
+            above_60
+        )
+        game["value_count"] = len(
+            value_rows
         )
 
-        output.append(
-            game
+        game["highest_probability"] = max(
+            float(p.probability)
+            for p in rows
         )
 
-    output.sort(
-        key=lambda game:
-            game["event"].starts_at
+        result.append(game)
+
+    result.sort(
+        key=lambda item:
+            item["event"].starts_at
     )
 
-    return output
+    return result
 
 
 @login_required
 def dashboard(request):
-    today = (
-        timezone.localdate()
-    )
-
+    today = timezone.localdate()
     tomorrow = (
         today
         + timedelta(days=1)
     )
 
-    mode = request.GET.get(
+    filter_mode = request.GET.get(
         "f",
         "all",
     )
 
-    if mode not in (
+    if filter_mode not in (
         "all",
         "60",
         "value",
     ):
-        mode = "all"
+        filter_mode = "all"
 
     model = current_model()
 
@@ -263,6 +233,7 @@ def dashboard(request):
         predictions = (
             Prediction.objects.none()
         )
+
     else:
         predictions = (
             Prediction.objects
@@ -272,7 +243,6 @@ def dashboard(request):
                 "event__away_team",
                 "event__competition",
                 "market",
-                "model_version",
             )
             .filter(
                 model_version=model,
@@ -292,23 +262,23 @@ def dashboard(request):
             )
         )
 
-    today_predictions = []
-    tomorrow_predictions = []
+    today_rows = []
+    tomorrow_rows = []
 
     for prediction in predictions:
-        day = (
+        event_day = (
             timezone.localtime(
                 prediction.event.starts_at
             ).date()
         )
 
-        if day == today:
-            today_predictions.append(
+        if event_day == today:
+            today_rows.append(
                 prediction
             )
 
-        elif day == tomorrow:
-            tomorrow_predictions.append(
+        elif event_day == tomorrow:
+            tomorrow_rows.append(
                 prediction
             )
 
@@ -316,25 +286,21 @@ def dashboard(request):
         request,
         "core/dashboard.html",
         {
-            "today":
-                today,
-
-            "tomorrow":
-                tomorrow,
-
-            "mode":
-                mode,
+            "today": today,
+            "tomorrow": tomorrow,
+            "filter_mode":
+                filter_mode,
 
             "today_games":
-                group_games(
-                    today_predictions,
-                    mode,
+                game_cards(
+                    today_rows,
+                    filter_mode,
                 ),
 
             "tomorrow_games":
-                group_games(
-                    tomorrow_predictions,
-                    mode,
+                game_cards(
+                    tomorrow_rows,
+                    filter_mode,
                 ),
 
             "value_edge":
@@ -358,6 +324,9 @@ def event_detail(
         pk=event_id,
     )
 
+    if not event_is_visible(event):
+        raise Http404
+
     model = current_model()
 
     predictions = []
@@ -370,6 +339,7 @@ def event_detail(
                 "event",
                 "event__home_team",
                 "event__away_team",
+                "event__competition",
             )
             .filter(
                 event=event,
@@ -383,7 +353,7 @@ def event_detail(
         )
 
     for prediction in predictions:
-        decorate(
+        decorate_prediction(
             prediction
         )
 
@@ -391,9 +361,7 @@ def event_detail(
         request,
         "core/event_detail.html",
         {
-            "event":
-                event,
-
+            "event": event,
             "groups":
                 group_markets(
                     predictions
@@ -407,6 +375,11 @@ def prediction_detail(
     request,
     prediction_id,
 ):
+    model = current_model()
+
+    if not model:
+        raise Http404
+
     prediction = get_object_or_404(
         Prediction.objects
         .select_related(
@@ -418,7 +391,14 @@ def prediction_detail(
             "model_version",
         ),
         pk=prediction_id,
+        model_version=model,
+        is_current=True,
     )
+
+    if not event_is_visible(
+        prediction.event
+    ):
+        raise Http404
 
     return render(
         request,
