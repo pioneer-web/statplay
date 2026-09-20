@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta
+ name="viewport"
+ content="width=device-width,initial-scale=1"
+>
+
+<title>
+ StatPlay — Inteligência esportiva
+</title>
+
+<style>
+:root{
+ --background:#f5f6f8;
+ --surface:#ffffff;
+ --surface-secondary:#f0f2f5;
+
+ --text:#181c22;
+ --secondary:#737b87;
+ --border:#e4e7ec;
+
+ --primary:#15a46d;
+ --primary-soft:#e6f7f0;
+
+ --info:#3478f6;
+
+ --radius:18px;
+
+ --shadow:
+ 0 3px 18px rgba(20,30,45,.07);
+}
+
+*{
+ box-sizing:border-box;
+}
+
+html{
+ scroll-behavior:smooth;
+}
+
+body{
+ margin:0;
+
+ background:
+ var(--background);
+
+ color:var(--text);
+
+ font-family:
+ Roboto,
+ -apple-system,
+ BlinkMacSystemFont,
+ "Segoe UI",
+ sans-serif;
+}
+
+.wrap{
+ width:min(
+  100% - 32px,
+  1080px
+ );
+
+ margin:auto;
+}
+
+.header{
+ position:sticky;
+ top:0;
+ z-index:30;
+
+ border-bottom:
+ 1px solid rgba(
+   228,
+   231,
+   236,
+   .8
+  );
+
+ background:
+ rgba(
+  245,
+  246,
+  248,
+  .94
+ );
+
+ backdrop-filter:
+ blur(12px);
+}
+
+.nav{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+
+ min-height:68px;
+}
+
+.logo{
+ color:var(--text);
+ text-decoration:none;
+
+ font-size:25px;
+ font-weight:850;
+ letter-spacing:-.7px;
+}
+
+.logo span{
+ color:var(--primary);
+}
+
+.nav-actions{
+ display:flex;
+ gap:8px;
+}
+
+.btn{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+
+ min-height:42px;
+
+ padding:0 17px;
+
+ border:0;
+ border-radius:12px;
+
+ text-decoration:none;
+
+ font-size:12px;
+ font-weight:800;
+}
+
+.btn-light{
+ border:
+ 1px solid var(--border);
+
+ background:
+ var(--surface);
+
+ color:var(--text);
+}
+
+.btn-primary{
+ background:
+ var(--primary);
+
+ color:#fff;
+}
+
+.hero{
+ padding:
+ 64px 0 48px;
+}
+
+.hero-grid{
+ display:grid;
+ grid-template-columns:
+ 1.1fr .9fr;
+
+ gap:44px;
+ align-items:center;
+}
+
+.eyebrow{
+ display:inline-flex;
+
+ padding:
+ 7px 10px;
+
+ border-radius:9px;
+
+ background:
+ var(--primary-soft);
+
+ color:
+ var(--primary);
+
+ font-size:11px;
+ font-weight:800;
+}
+
+.hero h1{
+ max-width:620px;
+
+ margin:
+ 18px 0 14px;
+
+ font-size:
+ clamp(
+  38px,
+  6vw,
+  64px
+ );
+
+ line-height:.98;
+
+ letter-spacing:
+ -2.8px;
+}
+
+.hero h1 span{
+ color:
+ var(--primary);
+}
+
+.hero-text{
+ max-width:560px;
+
+ color:
+ var(--secondary);
+
+ font-size:16px;
+ line-height:1.6;
+}
+
+.hero-actions{
+ display:flex;
+ flex-wrap:wrap;
+
+ gap:10px;
+
+ margin-top:26px;
+}
+
+.hero-note{
+ margin-top:12px;
+
+ color:
+ var(--secondary);
+
+ font-size:10px;
+}
+
+.demo{
+ padding:17px;
+
+ border:
+ 1px solid var(--border);
+
+ border-radius:24px;
+
+ background:
+ var(--surface);
+
+ box-shadow:
+ 0 18px 55px
+ rgba(
+  20,
+  30,
+  45,
+  .10
+ );
+}
+
+.demo-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+
+ margin-bottom:14px;
+}
+
+.demo-logo{
+ font-size:16px;
+ font-weight:850;
+}
+
+.demo-logo span{
+ color:
+ var(--primary);
+}
+
+.demo-date{
+ color:
+ var(--secondary);
+
+ font-size:10px;
+}
+
+.game{
+ margin-top:10px;
+
+ padding:14px;
+
+ border:
+ 1px solid var(--border);
+
+ border-radius:14px;
+
+ background:
+ var(--surface);
+}
+
+.game small{
+ color:
+ var(--secondary);
+}
+
+.teams{
+ margin:8px 0 12px;
+
+ font-size:13px;
+ font-weight:750;
+ line-height:1.7;
+}
+
+.tags{
+ display:flex;
+ flex-wrap:wrap;
+ gap:6px;
+}
+
+.tag{
+ padding:
+ 5px 7px;
+
+ border-radius:7px;
+
+ background:
+ var(--surface-secondary);
+
+ color:
+ var(--secondary);
+
+ font-size:9px;
+ font-weight:700;
+}
+
+.tag.green{
+ background:
+ var(--primary-soft);
+
+ color:
+ var(--primary);
+}
+
+.section{
+ padding:
+ 60px 0;
+}
+
+.section-title{
+ max-width:680px;
+
+ margin:
+ 0 auto 36px;
+
+ text-align:center;
+}
+
+.section-title h2{
+ margin:0;
+
+ font-size:
+ clamp(
+  27px,
+  5vw,
+  40px
+ );
+
+ letter-spacing:
+ -1.3px;
+}
+
+.section-title p{
+ margin:
+ 11px 0 0;
+
+ color:
+ var(--secondary);
+
+ font-size:14px;
+ line-height:1.55;
+}
+
+.features{
+ display:grid;
+
+ grid-template-columns:
+ repeat(
+  3,
+  1fr
+ );
+
+ gap:13px;
+}
+
+.feature{
+ padding:20px;
+
+ border:
+ 1px solid var(--border);
+
+ border-radius:
+ var(--radius);
+
+ background:
+ var(--surface);
+}
+
+.feature-icon{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+
+ width:39px;
+ height:39px;
+
+ margin-bottom:14px;
+
+ border-radius:11px;
+
+ background:
+ var(--primary-soft);
+
+ color:
+ var(--primary);
+
+ font-weight:900;
+}
+
+.feature h3{
+ margin:
+ 0 0 7px;
+
+ font-size:15px;
+}
+
+.feature p{
+ margin:0;
+
+ color:
+ var(--secondary);
+
+ font-size:12px;
+ line-height:1.5;
+}
+
+.steps{
+ display:grid;
+
+ grid-template-columns:
+ repeat(
+  3,
+  1fr
+ );
+
+ gap:13px;
+}
+
+.step{
+ padding:22px;
+
+ border-radius:
+ var(--radius);
+
+ background:
+ var(--surface);
+}
+
+.number{
+ color:
+ var(--primary);
+
+ font-size:11px;
+ font-weight:900;
+}
+
+.step h3{
+ margin:
+ 8px 0;
+
+ font-size:16px;
+}
+
+.step p{
+ margin:0;
+
+ color:
+ var(--secondary);
+
+ font-size:12px;
+ line-height:1.5;
+}
+
+.plans{
+ display:grid;
+
+ grid-template-columns:
+ repeat(
+  2,
+  minmax(
+   0,
+   380px
+  )
+ );
+
+ justify-content:center;
+
+ gap:15px;
+}
+
+.plan{
+ position:relative;
+
+ padding:22px;
+
+ border:
+ 1px solid var(--border);
+
+ border-radius:20px;
+
+ background:
+ var(--surface);
+}
+
+.plan.highlight{
+ border:
+ 2px solid var(--primary);
+}
+
+.plan-badge{
+ position:absolute;
+ top:15px;
+ right:15px;
+
+ padding:
+ 5px 8px;
+
+ border-radius:8px;
+
+ background:
+ var(--primary-soft);
+
+ color:
+ var(--primary);
+
+ font-size:9px;
+ font-weight:850;
+}
+
+.plan-name{
+ font-size:20px;
+ font-weight:850;
+}
+
+.price{
+ margin:
+ 15px 0;
+
+ font-size:28px;
+ font-weight:900;
+}
+
+.price small{
+ color:
+ var(--secondary);
+
+ font-size:10px;
+ font-weight:500;
+}
+
+.plan-feature{
+ display:flex;
+ gap:8px;
+
+ margin:9px 0;
+
+ color:
+ var(--secondary);
+
+ font-size:12px;
+}
+
+.check{
+ color:
+ var(--primary);
+
+ font-weight:900;
+}
+
+.plan .btn{
+ width:100%;
+
+ margin-top:16px;
+}
+
+.empty{
+ grid-column:1/-1;
+
+ padding:30px;
+
+ border:
+ 1px dashed var(--border);
+
+ border-radius:18px;
+
+ background:
+ var(--surface);
+
+ color:
+ var(--secondary);
+
+ text-align:center;
+}
+
+.final-cta{
+ padding:
+ 56px 0 70px;
+}
+
+.cta-card{
+ padding:
+ 38px 28px;
+
+ border-radius:24px;
+
+ background:
+ #181c22;
+
+ color:#fff;
+
+ text-align:center;
+}
+
+.cta-card h2{
+ margin:0;
+
+ font-size:
+ clamp(
+  27px,
+  5vw,
+  40px
+ );
+}
+
+.cta-card p{
+ max-width:520px;
+
+ margin:
+ 12px auto 22px;
+
+ color:#bfc5ce;
+
+ font-size:13px;
+ line-height:1.55;
+}
+
+.footer{
+ padding:
+ 23px 0 30px;
+
+ border-top:
+ 1px solid var(--border);
+
+ color:
+ var(--secondary);
+
+ font-size:10px;
+ text-align:center;
+}
+
+@media(max-width:760px){
+
+ .hero{
+  padding-top:38px;
+ }
+
+ .hero-grid{
+  grid-template-columns:
+   1fr;
+
+  gap:28px;
+ }
+
+ .hero h1{
+  letter-spacing:
+   -1.8px;
+ }
+
+ .features,
+ .steps{
+  grid-template-columns:
+   1fr;
+ }
+
+ .plans{
+  grid-template-columns:
+   1fr;
+ }
+
+ .nav-actions
+ .btn-light{
+  display:none;
+ }
+
+}
+</style>
+
+</head>
+
+<body>
+
+
+<header class="header">
+
+<div class="wrap nav">
+
+<a
+ href="/"
+ class="logo"
+>
+ Stat<span>Play</span>
+</a>
+
+
+<div class="nav-actions">
+
+<a
+ href="/login/"
+ class="btn btn-light"
+>
+ Entrar
+</a>
+
+<a
+ href="#planos"
+ class="btn btn-primary"
+>
+ Ver planos
+</a>
+
+</div>
+
+</div>
+
+</header>
+
+
+<main>
+
+
+<section class="hero">
+
+<div class="wrap hero-grid">
+
+
+<div>
+
+<span class="eyebrow">
+ Inteligência para suas análises
+</span>
+
+
+<h1>
+ Veja o jogo
+ além do
+ <span>placar.</span>
+</h1>
+
+
+<p class="hero-text">
+
+O StatPlay transforma dados
+de futebol em probabilidades
+para resultado, gols,
+escanteios e cartões.
+
+Compare a estimativa do modelo
+com as odds disponíveis e
+entenda como cada percentual
+foi calculado.
+
+</p>
+
+
+<div class="hero-actions">
+
+<a
+ href="#planos"
+ class="btn btn-primary"
+>
+ Conhecer os planos
+</a>
+
+<a
+ href="/login/"
+ class="btn btn-light"
+>
+ Já sou cliente
+</a>
+
+</div>
+
+
+<div class="hero-note">
+ Probabilidades são estimativas
+ estatísticas, não garantias
+ de resultado.
+</div>
+
+</div>
+
+
+
+<div class="demo">
+
+<div class="demo-head">
+
+<div class="demo-logo">
+ Stat<span>Play</span>
+</div>
+
+<div class="demo-date">
+ Hoje
+</div>
+
+</div>
+
+
+<div class="game">
+
+<small>
+ Premier League · 16:00
+</small>
+
+<div class="teams">
+ Arsenal<br>
+ Liverpool
+</div>
+
+<div class="tags">
+
+<span class="tag">
+ 18 mercados
+</span>
+
+<span class="tag green">
+ 8 com 60%+
+</span>
+
+</div>
+
+</div>
+
+
+<div class="game">
+
+<small>
+ Brasileirão · 18:30
+</small>
+
+<div class="teams">
+ Flamengo<br>
+ Palmeiras
+</div>
+
+<div class="tags">
+
+<span class="tag">
+ 20 mercados
+</span>
+
+<span class="tag green">
+ Análise disponível
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section class="section">
+
+<div class="wrap">
+
+<div class="section-title">
+
+<h2>
+ Uma análise,
+ vários mercados
+</h2>
+
+<p>
+Cada tipo de aposta possui
+um cálculo específico,
+em vez de usar uma única
+fórmula para tudo.
+</p>
+
+</div>
+
+
+<div class="features">
+
+<div class="feature">
+
+<div class="feature-icon">
+ %
+</div>
+
+<h3>
+ Probabilidades próprias
+</h3>
+
+<p>
+O StatPlay calcula suas próprias
+probabilidades para cada mercado
+analisado.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+ ↗
+</div>
+
+<h3>
+ Odd justa
+</h3>
+
+<p>
+Veja qual seria a odd equivalente
+à probabilidade calculada pelo
+modelo.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+ ≠
+</div>
+
+<h3>
+ Comparação de mercado
+</h3>
+
+<p>
+Compare a leitura StatPlay
+com a probabilidade implícita
+nas odds disponíveis.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+ ⚽
+</div>
+
+<h3>
+ Gols e resultado
+</h3>
+
+<p>
+1X2, dupla chance, gols,
+ambas marcam e outras
+leituras do jogo.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+ ◇
+</div>
+
+<h3>
+ Escanteios
+</h3>
+
+<p>
+Probabilidades construídas
+a partir do comportamento
+ofensivo e defensivo recente.
+</p>
+
+</div>
+
+
+<div class="feature">
+
+<div class="feature-icon">
+ !
+</div>
+
+<h3>
+ Cartões
+</h3>
+
+<p>
+Mercado analisado separadamente,
+considerando o perfil recente
+das equipes.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section class="section">
+
+<div class="wrap">
+
+<div class="section-title">
+
+<h2>
+ Simples de usar
+</h2>
+
+<p>
+A navegação foi organizada
+para chegar rapidamente
+à informação que importa.
+</p>
+
+</div>
+
+
+<div class="steps">
+
+<div class="step">
+
+<div class="number">
+ 01
+</div>
+
+<h3>
+ Escolha a partida
+</h3>
+
+<p>
+Veja os jogos disponíveis
+de hoje e amanhã.
+</p>
+
+</div>
+
+
+<div class="step">
+
+<div class="number">
+ 02
+</div>
+
+<h3>
+ Veja os mercados
+</h3>
+
+<p>
+Resultado, gols, escanteios,
+cartões e suas probabilidades.
+</p>
+
+</div>
+
+
+<div class="step">
+
+<div class="number">
+ 03
+</div>
+
+<h3>
+ Entenda o cálculo
+</h3>
+
+<p>
+Abra qualquer mercado
+para visualizar as variáveis
+que influenciaram a análise.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section
+ class="section"
+ id="planos"
+>
+
+<div class="wrap">
+
+<div class="section-title">
+
+<h2>
+ Escolha seu plano
+</h2>
+
+<p>
+Tenha acesso às análises
+e recursos do StatPlay.
+</p>
+
+</div>
+
+
+<div class="plans">
+
+{% for plan in plans %}
+
+<div
+ class="plan
+ {% if plan.code == 'PRO_PLUS' %}
+ highlight
+ {% endif %}
+ "
+>
+
+{% if plan.code == "PRO_PLUS" %}
+
+<div class="plan-badge">
+ Mais completo
+</div>
+
+{% endif %}
+
+
+<div class="plan-name">
+ {{ plan.name }}
+</div>
+
+
+<div class="price">
+
+R$ {{ plan.monthly_price }}
+
+<small>
+ / mês
+</small>
+
+</div>
+
+
+<div class="plan-feature">
+ <span class="check">✓</span>
+ Probabilidades StatPlay
+</div>
+
+
+<div class="plan-feature">
+ <span class="check">✓</span>
+ Odds justas
+</div>
+
+
+<div class="plan-feature">
+ <span class="check">✓</span>
+ Análise detalhada dos mercados
+</div>
+
+
+{% if plan.telegram_alerts %}
+
+<div class="plan-feature">
+ <span class="check">✓</span>
+ Alertas Telegram
+</div>
+
+{% endif %}
+
+
+{% if plan.whatsapp_alerts %}
+
+<div class="plan-feature">
+ <span class="check">✓</span>
+ Alertas WhatsApp
+</div>
+
+{% endif %}
+
+
+{% if plan.ai_explanations %}
+
+<div class="plan-feature">
+ <span class="check">✓</span>
+ Explicações das análises
+</div>
+
+{% endif %}
+
+
+{% if request.user.is_authenticated %}
+
+<a
+ href="/conta/?plano={{ plan.code }}"
+ class="btn btn-primary"
+>
+ Escolher {{ plan.name }}
+</a>
+
+{% else %}
+
+<a
+ href="/cadastro/?plan={{ plan.code }}"
+ class="btn btn-primary"
+>
+ Contratar {{ plan.name }}
+</a>
+
+{% endif %}
+
+</div>
+
+{% empty %}
+
+<div class="empty">
+
+Os planos ainda não foram
+configurados no sistema.
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section class="final-cta">
+
+<div class="wrap">
+
+<div class="cta-card">
+
+<h2>
+ Tome decisões
+ com mais informação.
+</h2>
+
+<p>
+Organize a análise do jogo,
+compare probabilidades
+e encontre rapidamente
+os mercados que deseja estudar.
+</p>
+
+<a
+ href="#planos"
+ class="btn btn-primary"
+>
+ Ver planos
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+
+<footer class="footer">
+
+<div class="wrap">
+
+StatPlay · Inteligência
+estatística esportiva.
+
+<br><br>
+
+As informações apresentadas
+são estimativas estatísticas
+e não constituem garantia
+de resultado.
+
+</div>
+
+</footer>
+
+</body>
+</html>

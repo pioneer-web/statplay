@@ -11,7 +11,7 @@
 >
 
 <title>
- Entrar | StatPlay
+ Criar conta | StatPlay
 </title>
 
 <style>
@@ -44,7 +44,7 @@ body{
 .box{
  width:min(
   100%,
-  390px
+  410px
  );
 
  padding:25px;
@@ -62,7 +62,9 @@ body{
 }
 
 .logo{
- font-size:27px;
+ margin-bottom:5px;
+
+ font-size:26px;
  font-weight:850;
 }
 
@@ -72,11 +74,12 @@ body{
 
 .muted{
  margin:
- 6px 0 20px;
+ 0 0 22px;
 
  color:#737b87;
 
  font-size:12px;
+ line-height:1.45;
 }
 
 label{
@@ -120,7 +123,14 @@ button{
  font-weight:800;
 }
 
-.signup{
+.errors,
+.errorlist{
+ color:#d84d4d;
+
+ font-size:10px;
+}
+
+.login{
  margin-top:17px;
 
  color:#737b87;
@@ -129,15 +139,10 @@ button{
  text-align:center;
 }
 
-.signup a{
+.login a{
  color:#15a46d;
  font-weight:750;
  text-decoration:none;
-}
-
-.errorlist{
- color:#d84d4d;
- font-size:10px;
 }
 </style>
 
@@ -153,45 +158,47 @@ button{
 
 {% csrf_token %}
 
+
 <div class="logo">
  Stat<span>Play</span>
 </div>
 
+
 <p class="muted">
-Acesse sua conta.
+Crie sua conta para continuar
+com a contratação do plano
+selecionado.
 </p>
 
 
-{{ form.as_p }}
-
-
-{% if next %}
+{% if selected_plan %}
 
 <input
  type="hidden"
- name="next"
- value="{{ next }}"
+ name="plan"
+ value="{{ selected_plan }}"
 >
 
 {% endif %}
 
 
+{{ form.as_p }}
+
+
 <button type="submit">
- Entrar
+ Criar conta
 </button>
 
 
-<div class="signup">
-
-Ainda não possui conta?
-
-<a href="/cadastro/">
- Criar conta
-</a>
-
+<div class="login">
+ Já possui conta?
+ <a href="/login/">
+  Entrar
+ </a>
 </div>
 
 </form>
+
 
 </body>
 </html>

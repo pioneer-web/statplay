@@ -1,13 +1,61 @@
 from django.contrib import admin
-from django.urls import path, include
-from django.contrib.auth import views as auth_views
-urlpatterns=[
-    path('admin/',admin.site.urls),
-    path('login/',auth_views.LoginView.as_view(template_name='registration/login.html'),name='login'),
-    path('logout/',auth_views.LogoutView.as_view(),name='logout'),
+from django.contrib.auth import (
+    views as auth_views,
+)
+from django.urls import (
+    include,
+    path,
+)
+
+from core.public_views import landing
+
+
+urlpatterns = [
+
     path(
-        'conta/',
-        include('billing.urls'),
+        "admin/",
+        admin.site.urls,
     ),
-    path('',include('core.urls')),
+
+    path(
+        "",
+        landing,
+        name="landing",
+    ),
+
+    path(
+        "",
+        include(
+            "accounts.urls"
+        ),
+    ),
+
+    path(
+        "login/",
+        auth_views.LoginView.as_view(
+            template_name=
+                "registration/login.html"
+        ),
+        name="login",
+    ),
+
+    path(
+        "logout/",
+        auth_views.LogoutView.as_view(),
+        name="logout",
+    ),
+
+    path(
+        "conta/",
+        include(
+            "billing.urls"
+        ),
+    ),
+
+    path(
+        "app/",
+        include(
+            "core.urls"
+        ),
+    ),
 ]

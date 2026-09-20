@@ -8,7 +8,7 @@ app_name = "billing"
 
 urlpatterns = [
     path(
-        "conta/",
+        "",
         account,
         name="account",
     ),

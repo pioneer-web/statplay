@@ -29,6 +29,13 @@ def account(request):
         )
     )
 
+    selected_plan_code = (
+        request.GET.get(
+            "plano"
+        )
+        or ""
+    )
+
     return render(
         request,
         "billing/account.html",
@@ -38,5 +45,8 @@ def account(request):
 
             "plans":
                 plans,
+
+            "selected_plan_code":
+                selected_plan_code,
         },
     )
