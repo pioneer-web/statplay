@@ -1,5 +1,7 @@
 from datetime import date
 
+from django.utils import timezone
+
 from odds.services.sofascore_odds import (
     save_event_odds,
 )
@@ -19,22 +21,33 @@ from sports.services.competition_scope import (
 from sports.services.history_sync import (
     ensure_history,
 )
+from sports.services.player_data import (
+    ensure_player_history,
+    sync_upcoming_lineup,
+)
 
 
-def scoped_events(target_date):
+def scoped_events(
+    target_date,
+):
     queryset = (
         Event.objects
         .filter(
-            starts_at__date=target_date,
+            starts_at__date=
+                target_date,
             status="scheduled",
         )
-        .exclude(external_id="")
+        .exclude(
+            external_id=""
+        )
         .select_related(
             "home_team",
             "away_team",
             "competition",
         )
-        .order_by("starts_at")
+        .order_by(
+            "starts_at"
+        )
     )
 
     return [
@@ -47,18 +60,67 @@ def scoped_events(target_date):
     ]
 
 
-def run_pipeline(target_date=None):
-    target_date = (
-        target_date
-        or date.today()
-    )
+def sync_lineups(
+    events,
+    provider,
+):
+    available = 0
+    confirmed = 0
+    starters = 0
+    errors = 0
 
-    if isinstance(target_date, str):
-        target_date = date.fromisoformat(
-            target_date
+    for event in events:
+        try:
+            result = (
+                sync_upcoming_lineup(
+                    event,
+                    provider,
+                )
+            )
+
+        except Exception:
+            errors += 1
+            continue
+
+        if result["available"]:
+            available += 1
+
+        if result["confirmed"]:
+            confirmed += 1
+
+        starters += (
+            result["starters"]
         )
 
-    provider = SofaScoreProvider()
+    return {
+        "available": available,
+        "confirmed": confirmed,
+        "starters": starters,
+        "errors": errors,
+    }
+
+
+def run_pipeline(
+    target_date=None,
+):
+    target_date = (
+        target_date
+        or timezone.localdate()
+    )
+
+    if isinstance(
+        target_date,
+        str,
+    ):
+        target_date = (
+            date.fromisoformat(
+                target_date
+            )
+        )
+
+    provider = (
+        SofaScoreProvider()
+    )
 
     provider.sync_date(
         target_date.isoformat()
@@ -76,8 +138,23 @@ def run_pipeline(target_date=None):
         pages=3,
     )
 
+    player_history = (
+        ensure_player_history(
+            events,
+            provider,
+            matches_per_team=8,
+        )
+    )
+
+    lineups = sync_lineups(
+        events,
+        provider,
+    )
+
     predictions = (
-        generate_predictions(events)
+        generate_predictions(
+            events
+        )
     )
 
     odds_events = 0
@@ -93,9 +170,11 @@ def run_pipeline(target_date=None):
                 or {}
             )
 
-            result = save_event_odds(
-                event,
-                payload,
+            result = (
+                save_event_odds(
+                    event,
+                    payload,
+                )
             )
 
         except Exception:
@@ -112,19 +191,40 @@ def run_pipeline(target_date=None):
             result["snapshots"]
         )
 
-    settlement = settle_pending(
-        provider
+    settlement = (
+        settle_pending(
+            provider
+        )
     )
 
     return {
-        "date": target_date.isoformat(),
-        "events": len(events),
-        "history": history,
-        "predictions": predictions,
+        "date":
+            target_date.isoformat(),
+
+        "events":
+            len(events),
+
+        "history":
+            history,
+
+        "player_history":
+            player_history,
+
+        "lineups":
+            lineups,
+
+        "predictions":
+            predictions,
+
         "odds": {
-            "events": odds_events,
-            "offers": odds_offers,
-            "snapshots": snapshots,
+            "events":
+                odds_events,
+            "offers":
+                odds_offers,
+            "snapshots":
+                snapshots,
         },
-        "settlement": settlement,
+
+        "settlement":
+            settlement,
     }

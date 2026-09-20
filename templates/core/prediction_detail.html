@@ -2,544 +2,375 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
 <title>Análise StatPlay</title>
 
 <style>
 *{box-sizing:border-box}
 body{
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    margin:0;
-    background:#030914;
-    color:#e5e7eb;
-    min-height:100vh;
+ margin:0;
+ background:#030914;
+ color:#e5e7eb;
+ font-family:system-ui,-apple-system,sans-serif;
 }
-.wrap{
-    width:100%;
-    max-width:480px;
-    min-height:100vh;
-    margin:0 auto;
-    padding:18px 14px 30px;
-    background:#07111f;
+.app{
+ width:100%;
+ max-width:480px;
+ min-height:100vh;
+ margin:auto;
+ padding:16px;
+ background:#07111f;
 }
 a{
-    color:#34d399;
-    text-decoration:none
-}
-.header{
-    margin:20px 0
+ color:#34d399;
+ text-decoration:none;
 }
 .game{
-    font-size:27px;
-    font-weight:900
+ font-size:22px;
+ font-weight:900;
+ margin-top:18px;
 }
 .muted{
-    color:#94a3b8
-}
-.hero{
-    background:#101b2e;
-    border:1px solid #22314a;
-    border-radius:18px;
-    padding:22px;
-    display:grid;
-    grid-template-columns:2fr 1fr 1fr 1fr;
-    gap:20px;
-    margin:20px 0
-}
-.prob{
-    font-size:36px;
-    font-weight:900;
-    color:#34d399
+ color:#94a3b8;
+ font-size:12px;
 }
 .box{
-    background:#101b2e;
-    border:1px solid #22314a;
-    border-radius:16px;
-    padding:20px;
-    margin:15px 0
+ background:#101b2e;
+ border:1px solid #22314a;
+ border-radius:15px;
+ padding:16px;
+ margin:14px 0;
 }
-.grid2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px
+.hero{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
 }
-table{
-    width:100%;
-    border-collapse:collapse
+.full{
+ grid-column:1/-1;
 }
-td,th{
-    padding:9px;
-    border-bottom:1px solid #22314a;
-    text-align:left
+.prob{
+ color:#34d399;
+ font-weight:900;
+ font-size:34px;
 }
-th{
-    color:#94a3b8
+.value{
+ font-size:18px;
+ font-weight:850;
 }
-.tag{
-    display:inline-block;
-    background:#172338;
-    padding:5px 9px;
-    border-radius:8px;
-    font-size:12px
+.row{
+ display:flex;
+ justify-content:space-between;
+ gap:15px;
+ padding:8px 0;
+ border-bottom:1px solid #22314a;
+ font-size:13px;
 }
-.positive{
-    color:#34d399;
-    font-weight:800
+.row:last-child{
+ border:0;
 }
-.players{
-    margin:8px 0
+.team-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
 }
-.note{
-    background:#0c1728;
-    padding:14px;
-    border-radius:10px;
-    color:#cbd5e1
+.team{
+ background:#0b1628;
+ padding:12px;
+ border-radius:10px;
 }
-@media(max-width:750px){
-    .hero,.grid2{
-        grid-template-columns:1fr
-    }
+.team h3{
+ font-size:14px;
+ margin-top:0;
+}
+.small{
+ font-size:12px;
+ line-height:1.5;
 }
 </style>
 </head>
 
 <body>
-<main class="wrap">
+<main class="app">
 
-<a href="/">← Voltar às previsões</a>
+<a href="/">← Voltar</a>
 
-<div class="header">
-    <div class="game">
-        {{ prediction.event.home_team }}
-        ×
-        {{ prediction.event.away_team }}
-    </div>
-
-    <div class="muted">
-        {{ prediction.event.competition.name }}
-        ·
-        {{ prediction.event.starts_at|date:"d/m/Y H:i" }}
-    </div>
+<div class="game">
+ {{ prediction.event.home_team }}
+ ×
+ {{ prediction.event.away_team }}
 </div>
 
-<section class="hero">
-
-<div>
-    <div class="muted">
-        Mercado analisado
-    </div>
-
-    <h2>
-        {{ prediction.market.name }}
-    </h2>
+<div class="muted">
+ {{ prediction.event.competition.name }}
+ ·
+ {{ prediction.event.starts_at|date:"d/m H:i" }}
 </div>
 
-<div>
-    <div class="prob">
-        {{ prediction.probability }}%
-    </div>
-    <div class="muted">
-        probabilidade StatPlay
-    </div>
+
+<section class="box hero">
+
+<div class="full">
+ <div class="muted">
+   Mercado
+ </div>
+
+ <strong>
+   {{ prediction.market.name }}
+ </strong>
 </div>
 
 <div>
-    <strong>
-        {{ prediction.fair_odd|default:"—" }}
-    </strong>
-    <div class="muted">
-        odd justa
-    </div>
+ <div class="prob">
+   {{ prediction.probability }}%
+ </div>
+
+ <div class="muted">
+   Probabilidade StatPlay
+ </div>
 </div>
 
 <div>
-    {% if explanation.odds %}
-        <strong>
-            {{ explanation.odds.odd }}
-        </strong>
-        <div class="muted">
-            odd disponível
-        </div>
+ <div class="value">
+   {{ prediction.fair_odd|default:"—" }}
+ </div>
 
-        <div class="
-            {% if explanation.odds.edge > 0 %}
-                positive
-            {% endif %}
-        ">
-            Edge:
-            {{ explanation.odds.edge }}
-            p.p.
-        </div>
-    {% else %}
-        —
-        <div class="muted">
-            sem odd disponível
-        </div>
-    {% endif %}
+ <div class="muted">
+   Odd justa
+ </div>
 </div>
+
+{% if explanation.odds %}
+
+<div>
+ <div class="value">
+   {{ explanation.odds.odd }}
+ </div>
+
+ <div class="muted">
+   Odd disponível
+ </div>
+</div>
+
+<div>
+ <div class="value">
+   {{ explanation.odds.edge }} p.p.
+ </div>
+
+ <div class="muted">
+   Diferença modelo/mercado
+ </div>
+</div>
+
+{% endif %}
 
 </section>
 
 
 <section class="box">
+
 <h2>
-    Por que o StatPlay chegou a
-    {{ prediction.probability }}%?
+ Por que
+ {{ prediction.probability }}%?
 </h2>
 
-<p>
-    {{ explanation.conclusion }}
+<p class="small">
+ {{ explanation.conclusion }}
 </p>
+
+{% if explanation.method %}
+<p class="small muted">
+ Método:
+ {{ explanation.method }}
+</p>
+{% endif %}
+
 </section>
 
 
+{% if explanation.analysis_rows %}
+
 <section class="box">
+
+<h2>Variáveis deste mercado</h2>
+
+{% for item in explanation.analysis_rows %}
+
+<div class="row">
+ <span>
+   {{ item.label }}
+ </span>
+
+ <strong>
+   {{ item.value }}
+ </strong>
+</div>
+
+{% endfor %}
+
+</section>
+
+{% endif %}
+
+
+<section class="box">
+
 <h2>Histórico recente</h2>
 
-<div class="grid2">
+<div class="team-grid">
 
-<div>
-<h3>
-    {{ prediction.event.home_team }}
-</h3>
+<div class="team">
+ <h3>
+   {{ prediction.event.home_team }}
+ </h3>
 
-<table>
-<tr>
-    <th>Jogos analisados</th>
-    <td>
-        {{ explanation.home_form.matches }}
-    </td>
-</tr>
-<tr>
-    <th>Gols marcados/jogo</th>
-    <td>
-        {{ explanation.home_form.goals_for|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Gols sofridos/jogo</th>
-    <td>
-        {{ explanation.home_form.goals_against|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>xG médio</th>
-    <td>
-        {{ explanation.home_form.xg|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Chutes no alvo</th>
-    <td>
-        {{ explanation.home_form.shots_on_target|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Escanteios</th>
-    <td>
-        {{ explanation.home_form.corners|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Cartões</th>
-    <td>
-        {{ explanation.home_form.cards|default:"—" }}
-    </td>
-</tr>
-</table>
+ <div class="small">
+   Jogos:
+   {{ explanation.home_form.matches }}
+ </div>
+
+ <div class="small">
+   Gols:
+   {{ explanation.home_form.goals_for|default:"—" }}
+ </div>
+
+ <div class="small">
+   Sofridos:
+   {{ explanation.home_form.goals_against|default:"—" }}
+ </div>
+
+ <div class="small">
+   xG:
+   {{ explanation.home_form.xg|default:"—" }}
+ </div>
+
+ <div class="small">
+   Chutes no alvo:
+   {{ explanation.home_form.shots_on_target|default:"—" }}
+ </div>
+
+ <div class="small">
+   Escanteios:
+   {{ explanation.home_form.corners|default:"—" }}
+ </div>
+
+ <div class="small">
+   Cartões:
+   {{ explanation.home_form.cards|default:"—" }}
+ </div>
 </div>
 
 
-<div>
-<h3>
-    {{ prediction.event.away_team }}
-</h3>
+<div class="team">
+ <h3>
+   {{ prediction.event.away_team }}
+ </h3>
 
-<table>
-<tr>
-    <th>Jogos analisados</th>
-    <td>
-        {{ explanation.away_form.matches }}
-    </td>
-</tr>
-<tr>
-    <th>Gols marcados/jogo</th>
-    <td>
-        {{ explanation.away_form.goals_for|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Gols sofridos/jogo</th>
-    <td>
-        {{ explanation.away_form.goals_against|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>xG médio</th>
-    <td>
-        {{ explanation.away_form.xg|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Chutes no alvo</th>
-    <td>
-        {{ explanation.away_form.shots_on_target|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Escanteios</th>
-    <td>
-        {{ explanation.away_form.corners|default:"—" }}
-    </td>
-</tr>
-<tr>
-    <th>Cartões</th>
-    <td>
-        {{ explanation.away_form.cards|default:"—" }}
-    </td>
-</tr>
-</table>
+ <div class="small">
+   Jogos:
+   {{ explanation.away_form.matches }}
+ </div>
+
+ <div class="small">
+   Gols:
+   {{ explanation.away_form.goals_for|default:"—" }}
+ </div>
+
+ <div class="small">
+   Sofridos:
+   {{ explanation.away_form.goals_against|default:"—" }}
+ </div>
+
+ <div class="small">
+   xG:
+   {{ explanation.away_form.xg|default:"—" }}
+ </div>
+
+ <div class="small">
+   Chutes no alvo:
+   {{ explanation.away_form.shots_on_target|default:"—" }}
+ </div>
+
+ <div class="small">
+   Escanteios:
+   {{ explanation.away_form.corners|default:"—" }}
+ </div>
+
+ <div class="small">
+   Cartões:
+   {{ explanation.away_form.cards|default:"—" }}
+ </div>
 </div>
 
 </div>
+
 </section>
 
 
-{% if explanation.adjustment %}
+{% if explanation.home_lineup.available or explanation.away_lineup.available %}
+
 <section class="box">
 
-<h2>
-    Expectativa de gols
-</h2>
+<h2>Escalações</h2>
 
-<table>
-<tr>
-    <th></th>
-    <th>
-        {{ prediction.event.home_team }}
-    </th>
-    <th>
-        {{ prediction.event.away_team }}
-    </th>
-</tr>
+<div class="team-grid">
 
-<tr>
-    <td>Antes da escalação</td>
-    <td>
-        {{ explanation.adjustment.base_home }}
-    </td>
-    <td>
-        {{ explanation.adjustment.base_away }}
-    </td>
-</tr>
+<div class="team">
+ <h3>
+   {{ prediction.event.home_team }}
+ </h3>
 
-<tr>
-    <td>Após ajustes</td>
-    <td>
-        {{ explanation.adjustment.adjusted_home }}
-    </td>
-    <td>
-        {{ explanation.adjustment.adjusted_away }}
-    </td>
-</tr>
+ <div class="small">
+   {{ explanation.home_lineup.status }}
+ </div>
 
-<tr>
-    <td>Fator ofensivo</td>
-    <td>
-        {{ explanation.adjustment.home_attack }}
-    </td>
-    <td>
-        {{ explanation.adjustment.away_attack }}
-    </td>
-</tr>
+ {% for p in explanation.home_lineup.attackers %}
+ <div class="small">
+   {{ p.name }}
 
-<tr>
-    <td>Fator defensivo</td>
-    <td>
-        {{ explanation.adjustment.home_defense }}
-    </td>
-    <td>
-        {{ explanation.adjustment.away_defense }}
-    </td>
-</tr>
-</table>
+   {% if p.goals90 != None %}
+     · {{ p.goals90 }} gol/90
+   {% endif %}
+ </div>
+ {% endfor %}
+</div>
+
+<div class="team">
+ <h3>
+   {{ prediction.event.away_team }}
+ </h3>
+
+ <div class="small">
+   {{ explanation.away_lineup.status }}
+ </div>
+
+ {% for p in explanation.away_lineup.attackers %}
+ <div class="small">
+   {{ p.name }}
+
+   {% if p.goals90 != None %}
+     · {{ p.goals90 }} gol/90
+   {% endif %}
+ </div>
+ {% endfor %}
+</div>
+
+</div>
 
 </section>
+
 {% endif %}
 
 
-<section class="box">
-<h2>Escalações e jogadores</h2>
-
-<div class="grid2">
-
-<div>
-<h3>
-    {{ prediction.event.home_team }}
-</h3>
-
-<span class="tag">
-    {{ explanation.home_lineup.status }}
-</span>
-
-{% if explanation.home_lineup.attackers %}
-<h4>Principais jogadores ofensivos</h4>
-
-{% for player in explanation.home_lineup.attackers %}
-<div class="players">
-    <strong>
-        {{ player.name }}
-    </strong>
-    · {{ player.position }}
-
-    {% if player.goals90 != None %}
-        · {{ player.goals90 }}
-        gol/90
-    {% endif %}
-
-    {% if player.xg90 != None %}
-        · xG {{ player.xg90 }}/90
-    {% endif %}
-</div>
-{% endfor %}
-{% endif %}
-
-{% if explanation.home_lineup.defenders %}
-<h4>Defesa em campo</h4>
-
-{% for player in explanation.home_lineup.defenders %}
-<div class="players">
-    {{ player.name }}
-    · {{ player.position }}
-
-    {% if player.conceded != None %}
-        · equipe sofreu
-        {{ player.conceded }}
-        gol/jogo nas partidas analisadas
-    {% endif %}
-</div>
-{% endfor %}
-{% endif %}
-</div>
-
-
-<div>
-<h3>
-    {{ prediction.event.away_team }}
-</h3>
-
-<span class="tag">
-    {{ explanation.away_lineup.status }}
-</span>
-
-{% if explanation.away_lineup.attackers %}
-<h4>Principais jogadores ofensivos</h4>
-
-{% for player in explanation.away_lineup.attackers %}
-<div class="players">
-    <strong>
-        {{ player.name }}
-    </strong>
-    · {{ player.position }}
-
-    {% if player.goals90 != None %}
-        · {{ player.goals90 }}
-        gol/90
-    {% endif %}
-
-    {% if player.xg90 != None %}
-        · xG {{ player.xg90 }}/90
-    {% endif %}
-</div>
-{% endfor %}
-{% endif %}
-
-{% if explanation.away_lineup.defenders %}
-<h4>Defesa em campo</h4>
-
-{% for player in explanation.away_lineup.defenders %}
-<div class="players">
-    {{ player.name }}
-    · {{ player.position }}
-
-    {% if player.conceded != None %}
-        · equipe sofreu
-        {{ player.conceded }}
-        gol/jogo nas partidas analisadas
-    {% endif %}
-</div>
-{% endfor %}
-{% endif %}
-</div>
-
-</div>
-</section>
-
-
-<section class="box">
-<div class="note">
-    O percentual é uma estimativa estatística,
-    não uma garantia de resultado. A análise usa
-    somente informações disponíveis antes do jogo.
-</div>
+<section class="box small muted">
+ O percentual é uma estimativa estatística
+ produzida com os dados disponíveis antes
+ da partida. Não representa garantia de
+ resultado.
 </section>
 
 </main>
 </body>
 </html>
-
-<style>
-.hero{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    padding:18px;
-}
-
-.hero > div:first-child{
-    grid-column:1 / -1;
-}
-
-.grid2{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:14px;
-}
-
-.game{
-    font-size:23px;
-    line-height:1.25;
-}
-
-.prob{
-    font-size:34px;
-}
-
-.box{
-    padding:17px;
-    border-radius:15px;
-}
-
-.box h2{
-    font-size:19px;
-}
-
-table{
-    font-size:14px;
-}
-
-td,th{
-    padding:8px 5px;
-}
-
-@media(min-width:481px){
-    body{
-        display:flex;
-        justify-content:center;
-    }
-
-    .wrap{
-        box-shadow:0 0 45px rgba(0,0,0,.45);
-    }
-}
-</style>

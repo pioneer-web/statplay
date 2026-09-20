@@ -1,48 +1,33 @@
+from copy import deepcopy
 from decimal import Decimal
 
+from django.db import transaction
+
 from odds.models import Market
+from predictions.engine_v2 import (
+    ENGINE_VERSION,
+    evaluate_event,
+)
 from predictions.models import (
     ModelVersion,
     Prediction,
     PredictionContext,
 )
-from predictions.stat_engine_v11 import (
-    evaluate_event,
+from predictions.rationale import (
+    build_rationale,
+)
+from sports.services.competition_scope import (
+    is_target_competition,
 )
 
 
-OFFICIAL_MARKETS = {
-    "goals_over_1_5": (
-        "Mais de 1.5 gols",
-        "goals",
-        1.5,
-    ),
-    "cards_over_2_5": (
-        "Mais de 2.5 cartões",
-        "cards",
-        2.5,
-    ),
-    "corners_over_7_5": (
-        "Mais de 7.5 escanteios",
-        "corners",
-        7.5,
-    ),
-    "corners_over_8_5": (
-        "Mais de 8.5 escanteios",
-        "corners",
-        8.5,
-    ),
-    "cards_over_3_5": (
-        "Mais de 3.5 cartões",
-        "cards",
-        3.5,
-    ),
-    "btts_yes": (
-        "Ambas marcam",
-        "btts",
-        None,
-    ),
-}
+def decimal_value(value):
+    if value is None:
+        return None
+
+    return Decimal(
+        str(value)
+    )
 
 
 def get_model_version():
@@ -50,30 +35,92 @@ def get_model_version():
         ModelVersion.objects
         .get_or_create(
             name="StatPlay Core",
-            version="1.1.0",
+            version=ENGINE_VERSION,
             defaults={
-                "algorithm": (
-                    "recent-form+poisson"
-                    "+player-lineup"
-                ),
+                "algorithm":
+                    "market-specific-v2",
                 "active": True,
             },
         )
     )
 
+    ModelVersion.objects.filter(
+        name="StatPlay Core",
+    ).exclude(
+        pk=model.pk,
+    ).update(
+        active=False
+    )
+
+    if not model.active:
+        model.active = True
+        model.save(
+            update_fields=[
+                "active"
+            ]
+        )
+
     return model
 
 
-def generate_predictions(events):
+def same_prediction(
+    prediction,
+    item,
+    rationale,
+):
+    context = getattr(
+        prediction,
+        "context",
+        None,
+    )
+
+    if not context:
+        return False
+
+    if (
+        context.rationale
+        != rationale
+    ):
+        return False
+
+    return (
+        round(
+            float(
+                prediction.probability
+            ),
+            2,
+        )
+        ==
+        round(
+            float(
+                item[
+                    "probability"
+                ]
+            ),
+            2,
+        )
+    )
+
+
+def generate_predictions(
+    events,
+):
     model_version = (
         get_model_version()
     )
 
     generated = 0
+    revised = 0
     existing = 0
     insufficient = 0
 
     for event in events:
+        if not is_target_competition(
+            event.competition.name,
+            event.competition.country,
+        ):
+            continue
+
         result = evaluate_event(
             event,
             sample=10,
@@ -84,17 +131,18 @@ def generate_predictions(events):
             insufficient += 1
             continue
 
-        calculated = {
-            item["code"]: item
-            for item in result.get(
-                "markets",
-                [],
+        context_data = (
+            result.get(
+                "player_adjustment",
+                {},
             )
-        }
+        )
 
-        context_data = result.get(
-            "player_adjustment",
-            {},
+        base_rationale = (
+            build_rationale(
+                event,
+                context_data,
+            )
         )
 
         home = context_data.get(
@@ -107,178 +155,308 @@ def generate_predictions(events):
             {},
         )
 
-        for code, definition in (
-            OFFICIAL_MARKETS.items()
+        for item in result.get(
+            "markets",
+            [],
         ):
-            if code not in calculated:
-                continue
-
-            name, category, line = (
-                definition
-            )
-
             market, _ = (
                 Market.objects
                 .get_or_create(
-                    code=code,
+                    code=item["code"],
                     defaults={
-                        "name": name,
-                        "category": category,
+                        "name":
+                            item["name"],
+                        "category":
+                            item[
+                                "category"
+                            ],
                     },
                 )
             )
 
-            item = calculated[code]
+            if (
+                market.name
+                != item["name"]
+                or market.category
+                != item["category"]
+            ):
+                market.name = (
+                    item["name"]
+                )
+                market.category = (
+                    item["category"]
+                )
+                market.save(
+                    update_fields=[
+                        "name",
+                        "category",
+                    ]
+                )
 
-            lookup = {
-                "event": event,
-                "market": market,
-                "model_version": (
-                    model_version
-                ),
-                "selection": code,
-                "line": (
-                    Decimal(str(line))
-                    if line is not None
-                    else None
-                ),
-            }
-
-            prediction = (
-                Prediction.objects
-                .filter(**lookup)
-                .first()
+            rationale = deepcopy(
+                base_rationale
             )
 
-            if prediction:
-                existing += 1
-                continue
+            rationale[
+                "market_analysis"
+            ] = item.get(
+                "analysis_rows",
+                [],
+            )
 
-            prediction = (
-                Prediction.objects.create(
-                    **lookup,
-                    probability=Decimal(
-                        str(
-                            item[
-                                "probability"
-                            ]
-                        )
-                    ),
-                    confidence=Decimal(
-                        str(
-                            item.get(
-                                "confidence",
-                                0,
-                            )
-                        )
-                    ),
-                    fair_odd=(
-                        Decimal(
-                            str(
+            rationale[
+                "method"
+            ] = item.get(
+                "method",
+                "",
+            )
+
+            rationale[
+                "market_code"
+            ] = item["code"]
+
+            rationale[
+                "market_name"
+            ] = item["name"]
+
+            rationale[
+                "engine_version"
+            ] = ENGINE_VERSION
+
+            line = (
+                Decimal(
+                    str(
+                        item["line"]
+                    )
+                )
+                if item.get(
+                    "line"
+                )
+                is not None
+                else None
+            )
+
+            lookup = {
+                "event":
+                    event,
+
+                "market":
+                    market,
+
+                "model_version":
+                    model_version,
+
+                "selection":
+                    item["code"],
+
+                "line":
+                    line,
+            }
+
+            with transaction.atomic():
+                current = (
+                    Prediction.objects
+                    .select_for_update()
+                    .filter(
+                        **lookup,
+                        is_current=True,
+                    )
+                    .order_by(
+                        "-revision",
+                        "-created_at",
+                    )
+                    .first()
+                )
+
+                if (
+                    current
+                    and same_prediction(
+                        current,
+                        item,
+                        rationale,
+                    )
+                ):
+                    existing += 1
+                    continue
+
+                revision = 1
+                reason = "initial"
+
+                if current:
+                    revision = (
+                        current.revision
+                        + 1
+                    )
+
+                    reason = (
+                        "model_refresh"
+                    )
+
+                    Prediction.objects.filter(
+                        pk=current.pk
+                    ).update(
+                        is_current=False
+                    )
+
+                prediction = (
+                    Prediction.objects
+                    .create(
+                        **lookup,
+
+                        probability=
+                            decimal_value(
+                                item[
+                                    "probability"
+                                ]
+                            ),
+
+                        confidence=
+                            decimal_value(
+                                item[
+                                    "confidence"
+                                ]
+                            ),
+
+                        fair_odd=
+                            decimal_value(
                                 item[
                                     "fair_odd"
                                 ]
-                            )
-                        )
-                        if item.get(
-                            "fair_odd"
-                        )
-                        else None
-                    ),
-                    locked=True,
+                            ),
+
+                        locked=True,
+
+                        revision=
+                            revision,
+
+                        is_current=True,
+
+                        reason=
+                            reason,
+
+                        replaces=
+                            current,
+                    )
                 )
-            )
 
-            PredictionContext.objects.create(
-                prediction=prediction,
-                engine_version="1.1.0",
+                PredictionContext.objects.create(
+                    prediction=
+                        prediction,
 
-                home_lineup_available=bool(
-                    home.get(
-                        "available",
-                        False,
-                    )
-                ),
-                away_lineup_available=bool(
-                    away.get(
-                        "available",
-                        False,
-                    )
-                ),
+                    engine_version=
+                        ENGINE_VERSION,
 
-                home_lineup_confirmed=bool(
-                    home.get(
-                        "confirmed",
-                        False,
-                    )
-                ),
-                away_lineup_confirmed=bool(
-                    away.get(
-                        "confirmed",
-                        False,
-                    )
-                ),
+                    home_lineup_available=
+                        bool(
+                            home.get(
+                                "available",
+                                False,
+                            )
+                        ),
 
-                home_attack_factor=Decimal(
-                    str(
-                        home.get(
-                            "attack_factor",
-                            1,
-                        )
-                    )
-                ),
-                away_attack_factor=Decimal(
-                    str(
-                        away.get(
-                            "attack_factor",
-                            1,
-                        )
-                    )
-                ),
+                    away_lineup_available=
+                        bool(
+                            away.get(
+                                "available",
+                                False,
+                            )
+                        ),
 
-                home_defense_factor=Decimal(
-                    str(
-                        home.get(
-                            "defense_factor",
-                            1,
-                        )
-                    )
-                ),
-                away_defense_factor=Decimal(
-                    str(
-                        away.get(
-                            "defense_factor",
-                            1,
-                        )
-                    )
-                ),
+                    home_lineup_confirmed=
+                        bool(
+                            home.get(
+                                "confirmed",
+                                False,
+                            )
+                        ),
 
-                base_home_goals=(
-                    context_data.get(
-                        "base_home_goals"
-                    )
-                ),
-                base_away_goals=(
-                    context_data.get(
-                        "base_away_goals"
-                    )
-                ),
-                adjusted_home_goals=(
-                    context_data.get(
-                        "adjusted_home_goals"
-                    )
-                ),
-                adjusted_away_goals=(
-                    context_data.get(
-                        "adjusted_away_goals"
-                    )
-                ),
-            )
+                    away_lineup_confirmed=
+                        bool(
+                            away.get(
+                                "confirmed",
+                                False,
+                            )
+                        ),
 
-            generated += 1
+                    home_attack_factor=
+                        decimal_value(
+                            home.get(
+                                "attack_factor",
+                                1,
+                            )
+                        ),
+
+                    away_attack_factor=
+                        decimal_value(
+                            away.get(
+                                "attack_factor",
+                                1,
+                            )
+                        ),
+
+                    home_defense_factor=
+                        decimal_value(
+                            home.get(
+                                "defense_factor",
+                                1,
+                            )
+                        ),
+
+                    away_defense_factor=
+                        decimal_value(
+                            away.get(
+                                "defense_factor",
+                                1,
+                            )
+                        ),
+
+                    base_home_goals=
+                        decimal_value(
+                            context_data.get(
+                                "base_home_goals"
+                            )
+                        ),
+
+                    base_away_goals=
+                        decimal_value(
+                            context_data.get(
+                                "base_away_goals"
+                            )
+                        ),
+
+                    adjusted_home_goals=
+                        decimal_value(
+                            context_data.get(
+                                "adjusted_home_goals"
+                            )
+                        ),
+
+                    adjusted_away_goals=
+                        decimal_value(
+                            context_data.get(
+                                "adjusted_away_goals"
+                            )
+                        ),
+
+                    rationale=
+                        rationale,
+                )
+
+                if current:
+                    revised += 1
+                else:
+                    generated += 1
 
     return {
-        "generated": generated,
-        "existing": existing,
-        "insufficient": insufficient,
+        "generated":
+            generated,
+
+        "revised":
+            revised,
+
+        "existing":
+            existing,
+
+        "insufficient":
+            insufficient,
     }

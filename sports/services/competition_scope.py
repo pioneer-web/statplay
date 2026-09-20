@@ -14,9 +14,11 @@ def normalize(value):
         if not unicodedata.combining(char)
     )
 
-    value = value.lower().strip()
-
-    return re.sub(r"\s+", " ", value)
+    return re.sub(
+        r"\s+",
+        " ",
+        value.lower().strip(),
+    )
 
 
 BLOCKED = (
@@ -50,19 +52,6 @@ BLOCKED = (
 )
 
 
-EUROPE = (
-    "premier league",
-    "laliga",
-    "la liga",
-    "serie a",
-    "bundesliga",
-    "ligue 1",
-    "liga portugal",
-    "primeira liga",
-    "eredivisie",
-)
-
-
 EUROPE_CONTINENTAL = (
     "champions league",
     "europa league",
@@ -76,16 +65,6 @@ SOUTH_AMERICA = (
     "sul-americana",
     "recopa sudamericana",
     "recopa sul-americana",
-)
-
-
-BRAZIL_NATIONAL = (
-    "brasileirao",
-    "brasileirao serie a",
-    "brasileirao serie b",
-    "brasileiro serie a",
-    "brasileiro serie b",
-    "copa do brasil",
 )
 
 
@@ -112,27 +91,30 @@ STATE_BLOCKED = (
     "serie d",
     "serie a2",
     "serie a3",
-    "a2",
-    "a3",
-    "2a divisao",
-    "2ª divisao",
+    " a2",
+    " a3",
     "segunda divisao",
     "divisao de acesso",
-    "3a divisao",
-    "3ª divisao",
     "terceira divisao",
+    "quarta divisao",
     "copa paulista",
 )
 
 
-def is_target_competition(name, country=""):
+def is_target_competition(
+    name,
+    country="",
+):
     name = normalize(name)
     country = normalize(country)
 
     if not name:
         return False
 
-    if any(term in name for term in BLOCKED):
+    if any(
+        term in name
+        for term in BLOCKED
+    ):
         return False
 
     # UEFA
@@ -149,62 +131,75 @@ def is_target_competition(name, country=""):
     ):
         return True
 
-    # Brasil
-    if country in ("brazil", "brasil") or "brasileir" in name:
-        if any(
-            term in name
-            for term in STATE_BLOCKED
-        ):
-            return False
+    # Brasil nacional
+    if (
+        name == "brasileirao"
+        or name.startswith(
+            "brasileirao serie a"
+        )
+        or name.startswith(
+            "brasileirao serie b"
+        )
+        or name.startswith(
+            "brasileiro serie a"
+        )
+        or name.startswith(
+            "brasileiro serie b"
+        )
+        or name.startswith(
+            "copa do brasil"
+        )
+    ):
+        return True
 
-        if name == "brasileirao":
-            return True
-
-        if any(
-            term in name
-            for term in BRAZIL_NATIONAL
-        ):
-            return True
-
+    # Estaduais - somente primeira divisão
+    if country in (
+        "brazil",
+        "brasil",
+    ):
         if any(
             state in name
             for state in STATE_NAMES
         ):
+            if any(
+                blocked in name
+                for blocked
+                in STATE_BLOCKED
+            ):
+                return False
+
             return True
 
         return False
 
-    # Inglaterra
+    # Principais ligas europeias
     if country == "england":
         return name == "premier league"
 
-    # Espanha
     if country == "spain":
         return name in (
             "laliga",
             "la liga",
         )
 
-    # Itália
     if country == "italy":
         return name == "serie a"
 
-    # Alemanha
     if country == "germany":
         return name == "bundesliga"
 
-    # França
     if country == "france":
         return name == "ligue 1"
 
-    # Portugal
     if country == "portugal":
         return (
-            "liga portugal" in name
-            or name == "primeira liga"
+            name.startswith(
+                "liga portugal"
+            )
+            or name
+            == "primeira liga"
         )
 
-    # Holanda
     if country in (
         "netherlands",
         "holland",

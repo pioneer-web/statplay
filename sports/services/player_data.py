@@ -4,6 +4,7 @@ from sports.models import (
     EventLineupPlayer,
     Player,
     PlayerMatchStats,
+    TeamMatchStats,
 )
 
 
@@ -284,6 +285,12 @@ def sync_upcoming_lineup(
             "players": 0,
         }
 
+    # A escalação provável pode mudar.
+    # Recriamos o snapshot atual do evento.
+    EventLineupPlayer.objects.filter(
+        event=event
+    ).delete()
+
     confirmed = bool(
         payload.get("confirmed")
     )
@@ -363,4 +370,102 @@ def sync_upcoming_lineup(
         "confirmed": confirmed,
         "starters": starters,
         "players": total,
+    }
+
+
+
+def ensure_player_history(
+    events,
+    provider,
+    matches_per_team=8,
+):
+    if not events:
+        return {
+            "teams": 0,
+            "processed": 0,
+            "cached": 0,
+            "errors": 0,
+        }
+
+    teams = {}
+
+    for event in events:
+        teams[
+            event.home_team_id
+        ] = event.home_team
+
+        teams[
+            event.away_team_id
+        ] = event.away_team
+
+    cutoff = min(
+        event.starts_at
+        for event in events
+    )
+
+    seen_events = set()
+
+    processed = 0
+    cached = 0
+    errors = 0
+
+    for team in teams.values():
+        rows = (
+            TeamMatchStats.objects
+            .filter(
+                team=team,
+                event__status="finished",
+                event__starts_at__lt=cutoff,
+            )
+            .select_related(
+                "event",
+                "event__home_team",
+                "event__away_team",
+            )
+            .order_by(
+                "-event__starts_at"
+            )[
+                :matches_per_team
+            ]
+        )
+
+        for row in rows:
+            event = row.event
+
+            if event.id in seen_events:
+                continue
+
+            seen_events.add(
+                event.id
+            )
+
+            existing = (
+                PlayerMatchStats.objects
+                .filter(event=event)
+                .count()
+            )
+
+            if existing >= 14:
+                cached += 1
+                continue
+
+            try:
+                result = (
+                    sync_finished_event(
+                        event,
+                        provider,
+                    )
+                )
+
+                if result["saved"]:
+                    processed += 1
+
+            except Exception:
+                errors += 1
+
+    return {
+        "teams": len(teams),
+        "processed": processed,
+        "cached": cached,
+        "errors": errors,
     }

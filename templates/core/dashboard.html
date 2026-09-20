@@ -11,357 +11,401 @@
 *{box-sizing:border-box}
 
 body{
-    margin:0;
-    background:#030914;
-    color:#e5e7eb;
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+ margin:0;
+ background:#030914;
+ color:#e5e7eb;
+ font-family:system-ui,-apple-system,sans-serif;
 }
 
 .app{
-    width:100%;
-    max-width:480px;
-    min-height:100vh;
-    margin:auto;
-    padding:16px 14px 30px;
-    background:#07111f;
+ width:100%;
+ max-width:480px;
+ min-height:100vh;
+ margin:auto;
+ padding:15px;
+ background:#07111f;
 }
 
 .top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    position:sticky;
-    top:0;
-    background:#07111f;
-    padding:8px 0 12px;
-    z-index:20;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ position:sticky;
+ top:0;
+ z-index:20;
+ background:#07111f;
+ padding:8px 0 12px;
 }
 
 .brand{
-    font-size:27px;
-    font-weight:900;
+ font-size:27px;
+ font-weight:900;
 }
 
-.brand span{
-    color:#34d399;
-}
+.brand span{color:#34d399}
 
-.subtitle{
-    color:#94a3b8;
-    font-size:12px;
+.muted{
+ color:#94a3b8;
+ font-size:12px;
 }
 
 button{
-    background:#172338;
-    color:white;
-    border:0;
-    border-radius:9px;
-    padding:9px 13px;
+ background:#172338;
+ color:white;
+ border:0;
+ border-radius:9px;
+ padding:9px 13px;
 }
 
 .intro{
-    color:#94a3b8;
-    line-height:1.5;
-    font-size:13px;
-    margin:20px 0 25px;
+ color:#94a3b8;
+ font-size:13px;
+ line-height:1.5;
+ margin:17px 0;
+}
+
+.filters{
+ display:grid;
+ grid-template-columns:1fr 1fr 1fr;
+ gap:7px;
+ margin:16px 0 25px;
+}
+
+.filters a{
+ text-align:center;
+ text-decoration:none;
+ color:#e5e7eb;
+ background:#101b2e;
+ padding:10px 5px;
+ border-radius:10px;
+ border:1px solid #22314a;
+ font-size:13px;
+ font-weight:750;
+}
+
+.filters a.active{
+ background:#34d399;
+ color:#07111f;
+ border-color:#34d399;
 }
 
 .day{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:25px 0 10px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin:24px 0 9px;
 }
 
 .day h2{
-    margin:0;
-    font-size:19px;
+ margin:0;
+ font-size:19px;
 }
 
 .date{
-    color:#34d399;
-    font-weight:800;
-}
-
-.card{
-    display:block;
-    text-decoration:none;
-    color:inherit;
-    background:#101b2e;
-    border:1px solid #22314a;
-    border-radius:15px;
-    padding:15px;
-    margin:10px 0;
-}
-
-.card:active{
-    border-color:#34d399;
+ color:#34d399;
+ font-weight:800;
 }
 
 .game{
-    font-size:17px;
-    font-weight:850;
+ background:#101b2e;
+ border:1px solid #22314a;
+ border-radius:16px;
+ margin:11px 0;
+ overflow:hidden;
+}
+
+.game-head{
+ display:block;
+ padding:15px;
+ text-decoration:none;
+ color:inherit;
+ border-bottom:1px solid #22314a;
+}
+
+.teams{
+ font-weight:850;
+ font-size:17px;
 }
 
 .competition{
-    margin-top:3px;
-    color:#94a3b8;
-    font-size:12px;
+ margin-top:4px;
+ color:#94a3b8;
+ font-size:12px;
+}
+
+.group-title{
+ padding:11px 15px 5px;
+ color:#94a3b8;
+ font-size:11px;
+ text-transform:uppercase;
+ font-weight:800;
 }
 
 .market{
-    margin-top:15px;
-    font-weight:750;
+ display:grid;
+ grid-template-columns:1fr auto auto;
+ gap:9px;
+ align-items:center;
+ padding:10px 15px;
+ text-decoration:none;
+ color:inherit;
 }
 
-.metrics{
-    margin-top:13px;
-    display:grid;
-    grid-template-columns:
-        1fr 1fr 1fr;
-    gap:9px;
+.market:active{
+ background:#16243a;
 }
 
-.metric{
-    background:#0b1628;
-    border-radius:10px;
-    padding:10px;
+.market-name{
+ font-size:13px;
 }
 
-.value{
-    font-weight:900;
+.prob{
+ color:#34d399;
+ font-weight:900;
+ font-size:16px;
 }
 
-.probability{
-    color:#34d399;
-    font-size:22px;
+.odd{
+ font-size:12px;
+ color:#cbd5e1;
+ min-width:42px;
+ text-align:right;
 }
 
-.label{
-    color:#94a3b8;
-    font-size:10px;
-    margin-top:2px;
-}
-
-.detail{
-    color:#34d399;
-    font-size:12px;
-    font-weight:800;
-    margin-top:13px;
+.edge{
+ color:#38bdf8;
+ font-size:10px;
 }
 
 .empty{
-    padding:18px;
-    color:#94a3b8;
-    background:#0d1829;
-    border-radius:13px;
-    font-size:13px;
+ background:#0d1829;
+ color:#94a3b8;
+ padding:17px;
+ border-radius:13px;
+ font-size:13px;
+}
+
+.footer-note{
+ color:#64748b;
+ font-size:11px;
+ line-height:1.4;
+ margin:22px 0;
 }
 
 @media(min-width:481px){
-    .app{
-        box-shadow:
-            0 0 45px
-            rgba(0,0,0,.5);
-    }
+ .app{
+   box-shadow:0 0 45px rgba(0,0,0,.5);
+ }
 }
 </style>
 </head>
 
 <body>
-
 <main class="app">
 
 <div class="top">
+ <div>
+   <div class="brand">
+     Stat<span>Play</span>
+   </div>
+   <div class="muted">
+     Inteligência esportiva
+   </div>
+ </div>
 
-<div>
-    <div class="brand">
-        Stat<span>Play</span>
-    </div>
-
-    <div class="subtitle">
-        Inteligência esportiva
-    </div>
+ <form method="post"
+       action="/logout/">
+   {% csrf_token %}
+   <button>Sair</button>
+ </form>
 </div>
-
-<form method="post"
-      action="/logout/">
-    {% csrf_token %}
-    <button>Sair</button>
-</form>
-
-</div>
-
 
 <div class="intro">
-    Análises dos jogos de hoje
-    ({{ today|date:"d/m" }})
-    e do próximo dia
-    ({{ tomorrow|date:"d/m" }}).
+ Mercados dos jogos de hoje
+ ({{ today|date:"d/m" }})
+ e amanhã
+ ({{ tomorrow|date:"d/m" }}).
+ Cada mercado possui seu próprio
+ cálculo de probabilidade.
+</div>
 
-    São exibidas somente previsões
-    com probabilidade igual ou
-    superior a 60%.
+<div class="filters">
+ <a href="?f=all"
+    class="{% if mode == 'all' %}active{% endif %}">
+   Todos
+ </a>
+
+ <a href="?f=60"
+    class="{% if mode == '60' %}active{% endif %}">
+   60%+
+ </a>
+
+ <a href="?f=value"
+    class="{% if mode == 'value' %}active{% endif %}">
+   Com valor
+ </a>
 </div>
 
 
 <div class="day">
-    <h2>Hoje</h2>
-
-    <span class="date">
-        {{ today|date:"d/m" }}
-    </span>
+ <h2>Hoje</h2>
+ <span class="date">
+   {{ today|date:"d/m" }}
+ </span>
 </div>
 
+{% for game in today_games %}
 
-{% for p in today_predictions %}
+<section class="game">
 
-<a class="card"
+<a class="game-head"
+   href="{% url 'event_detail' game.event.id %}">
+ <div class="teams">
+   {{ game.event.home_team }}
+   ×
+   {{ game.event.away_team }}
+ </div>
+
+ <div class="competition">
+   {{ game.event.competition.name }}
+   ·
+   {{ game.event.starts_at|date:"H:i" }}
+ </div>
+</a>
+
+{% for group in game.groups %}
+
+<div class="group-title">
+ {{ group.label }}
+</div>
+
+{% for p in group.items %}
+
+<a class="market"
    href="{% url 'prediction_detail' p.id %}">
 
-<div class="game">
-    {{ p.event.home_team }}
-    ×
-    {{ p.event.away_team }}
-</div>
+ <div class="market-name">
+   {{ p.market.name }}
 
-<div class="competition">
-    {{ p.event.competition.name }}
-    ·
-    {{ p.event.starts_at|date:"H:i" }}
-</div>
+   {% if p.edge != None and p.edge >= 3 %}
+   <div class="edge">
+     diferença +{{ p.edge }} p.p.
+   </div>
+   {% endif %}
+ </div>
 
-<div class="market">
-    {{ p.market.name }}
-</div>
+ <div class="prob">
+   {{ p.probability }}%
+ </div>
 
-<div class="metrics">
-
-<div class="metric">
-    <div class="value probability">
-        {{ p.probability }}%
-    </div>
-    <div class="label">
-        probabilidade
-    </div>
-</div>
-
-<div class="metric">
-    <div class="value">
-        {{ p.fair_odd|default:"—" }}
-    </div>
-    <div class="label">
-        odd justa
-    </div>
-</div>
-
-<div class="metric">
-    <div class="value">
-        {{ p.best_odd|default:"—" }}
-    </div>
-    <div class="label">
-        odd disponível
-    </div>
-</div>
-
-</div>
-
-<div class="detail">
-    Entenda esta previsão →
-</div>
+ <div class="odd">
+   {% if p.best_odd %}
+     odd {{ p.best_odd }}
+   {% else %}
+     —
+   {% endif %}
+ </div>
 
 </a>
+
+{% endfor %}
+{% endfor %}
+
+</section>
 
 {% empty %}
 
 <div class="empty">
-    Nenhuma previsão acima de 60%
-    para os jogos restantes de hoje.
+ Nenhum mercado encontrado
+ para os jogos restantes de hoje
+ neste filtro.
 </div>
 
 {% endfor %}
 
 
 <div class="day">
-    <h2>Amanhã</h2>
-
-    <span class="date">
-        {{ tomorrow|date:"d/m" }}
-    </span>
+ <h2>Amanhã</h2>
+ <span class="date">
+   {{ tomorrow|date:"d/m" }}
+ </span>
 </div>
 
+{% for game in tomorrow_games %}
 
-{% for p in tomorrow_predictions %}
+<section class="game">
 
-<a class="card"
+<a class="game-head"
+   href="{% url 'event_detail' game.event.id %}">
+ <div class="teams">
+   {{ game.event.home_team }}
+   ×
+   {{ game.event.away_team }}
+ </div>
+
+ <div class="competition">
+   {{ game.event.competition.name }}
+   ·
+   {{ game.event.starts_at|date:"H:i" }}
+ </div>
+</a>
+
+{% for group in game.groups %}
+
+<div class="group-title">
+ {{ group.label }}
+</div>
+
+{% for p in group.items %}
+
+<a class="market"
    href="{% url 'prediction_detail' p.id %}">
 
-<div class="game">
-    {{ p.event.home_team }}
-    ×
-    {{ p.event.away_team }}
-</div>
+ <div class="market-name">
+   {{ p.market.name }}
 
-<div class="competition">
-    {{ p.event.competition.name }}
-    ·
-    {{ p.event.starts_at|date:"H:i" }}
-</div>
+   {% if p.edge != None and p.edge >= 3 %}
+   <div class="edge">
+     diferença +{{ p.edge }} p.p.
+   </div>
+   {% endif %}
+ </div>
 
-<div class="market">
-    {{ p.market.name }}
-</div>
+ <div class="prob">
+   {{ p.probability }}%
+ </div>
 
-<div class="metrics">
-
-<div class="metric">
-    <div class="value probability">
-        {{ p.probability }}%
-    </div>
-    <div class="label">
-        probabilidade
-    </div>
-</div>
-
-<div class="metric">
-    <div class="value">
-        {{ p.fair_odd|default:"—" }}
-    </div>
-    <div class="label">
-        odd justa
-    </div>
-</div>
-
-<div class="metric">
-    <div class="value">
-        {{ p.best_odd|default:"—" }}
-    </div>
-    <div class="label">
-        odd disponível
-    </div>
-</div>
-
-</div>
-
-<div class="detail">
-    Entenda esta previsão →
-</div>
+ <div class="odd">
+   {% if p.best_odd %}
+     odd {{ p.best_odd }}
+   {% else %}
+     —
+   {% endif %}
+ </div>
 
 </a>
+
+{% endfor %}
+{% endfor %}
+
+</section>
 
 {% empty %}
 
 <div class="empty">
-    Nenhuma previsão acima de 60%
-    disponível para amanhã.
+ Nenhum mercado encontrado
+ para amanhã neste filtro.
 </div>
 
 {% endfor %}
+
+<div class="footer-note">
+ “Com valor” mostra diferenças de pelo menos
+ {{ value_edge }} pontos percentuais entre
+ a estimativa StatPlay e a probabilidade
+ de mercado disponível. Não representa
+ garantia de resultado ou rentabilidade.
+</div>
 
 </main>
 </body>

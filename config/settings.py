@@ -25,20 +25,20 @@ STATIC_URL='static/'; STATIC_ROOT=BASE_DIR/'staticfiles'; STATICFILES_DIRS=[BASE
 DEFAULT_AUTO_FIELD='django.db.models.BigAutoField'
 LOGIN_URL='/login/'; LOGIN_REDIRECT_URL='/'; LOGOUT_REDIRECT_URL='/login/'
 CELERY_BROKER_URL=os.getenv('REDIS_URL','redis://redis:6379/0'); CELERY_RESULT_BACKEND=CELERY_BROKER_URL
-CELERY_BEAT_SCHEDULE={
-  'refresh-upcoming-events-every-15-min': {'task':'sports.tasks.refresh_upcoming_events','schedule':900.0},
-  'refresh-odds-every-10-min': {'task':'odds.tasks.refresh_odds','schedule':600.0},
-  'calculate-probabilities-every-15-min': {'task':'predictions.tasks.calculate_probabilities','schedule':900.0},
-  'dispatch-alerts-every-5-min': {'task':'alerts.tasks.dispatch_alerts','schedule':300.0},
-}
 SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO','https')
 CSRF_COOKIE_SECURE=not DEBUG; SESSION_COOKIE_SECURE=not DEBUG; X_FRAME_OPTIONS='DENY'
 
 # StatPlay automation
+
+# StatPlay scheduler
 CELERY_BEAT_SCHEDULE = {
     "statplay-pipeline": {
         "task": "core.tasks.run_statplay_pipeline",
         "schedule": 1800.0,
+    },
+    "statplay-lineups": {
+        "task": "core.tasks.refresh_statplay_lineups",
+        "schedule": 600.0,
     },
     "statplay-settlement": {
         "task": "core.tasks.settle_statplay_predictions",

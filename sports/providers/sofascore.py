@@ -214,16 +214,88 @@ class SofaScoreProvider:
 
         country = category.get("name", "")
 
-        competition, _ = (
-            Competition.objects.update_or_create(
-                sport=sport,
-                external_id=str(tournament_id),
-                defaults={
-                    "name": tournament_name,
-                    "country": country,
-                },
-            )
+        competition_external_id = str(
+            tournament_id or ""
         )
+
+        if competition_external_id:
+            competition = (
+                Competition.objects
+                .filter(
+                    sport=sport,
+                    external_id=
+                        competition_external_id,
+                )
+                .order_by("id")
+                .first()
+            )
+
+            if competition:
+                changed = False
+
+                if (
+                    competition.name
+                    != tournament_name
+                ):
+                    competition.name = (
+                        tournament_name
+                    )
+                    changed = True
+
+                if (
+                    competition.country
+                    != country
+                ):
+                    competition.country = (
+                        country
+                    )
+                    changed = True
+
+                if changed:
+                    competition.save(
+                        update_fields=[
+                            "name",
+                            "country",
+                        ]
+                    )
+
+            else:
+                competition = (
+                    Competition.objects
+                    .create(
+                        sport=sport,
+                        external_id=
+                            competition_external_id,
+                        name=
+                            tournament_name,
+                        country=
+                            country,
+                    )
+                )
+
+        else:
+            competition = (
+                Competition.objects
+                .filter(
+                    sport=sport,
+                    name=tournament_name,
+                    country=country,
+                )
+                .order_by("id")
+                .first()
+            )
+
+            if not competition:
+                competition = (
+                    Competition.objects
+                    .create(
+                        sport=sport,
+                        name=
+                            tournament_name,
+                        country=country,
+                        external_id="",
+                    )
+                )
 
         home, _ = Team.objects.update_or_create(
             sport=sport,
@@ -326,10 +398,6 @@ class SofaScoreProvider:
 
                 seen_events.add(event_id)
                 events_found += 1
-
-                if not self._country_allowed(item):
-                    ignored += 1
-                    continue
 
                 _, was_created = (
                     self._save_event(

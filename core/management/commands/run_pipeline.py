@@ -2,11 +2,16 @@ from django.core.management.base import (
     BaseCommand,
 )
 
-from core.pipeline import run_pipeline
+from core.pipeline import (
+    run_pipeline,
+)
 
 
 class Command(BaseCommand):
-    help = "Executa o pipeline oficial da StatPlay"
+    help = (
+        "Executa o pipeline "
+        "oficial da StatPlay"
+    )
 
     def add_arguments(
         self,
@@ -23,7 +28,9 @@ class Command(BaseCommand):
         **options,
     ):
         result = run_pipeline(
-            options.get("date")
+            options.get(
+                "date"
+            )
         )
 
         self.stdout.write(
@@ -31,32 +38,69 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(
-            f"Data: {result['date']}"
+            f"Data: "
+            f"{result['date']}"
         )
 
         self.stdout.write(
-            f"Jogos: {result['events']}"
+            f"Jogos no escopo: "
+            f"{result['events']}"
         )
 
-        history = result[
-            "history"
-        ]
+        history = (
+            result["history"]
+        )
 
         self.stdout.write(
-            "Histórico: "
+            "Histórico dos times: "
             f"{history['downloaded']} novos "
-            f"| {history['teams_ready']} times prontos"
+            f"| "
+            f"{history['teams_ready']} prontos"
         )
 
-        predictions = result[
-            "predictions"
-        ]
+        player_history = (
+            result[
+                "player_history"
+            ]
+        )
+
+        self.stdout.write(
+            "Histórico jogadores: "
+            f"{player_history['processed']} novos "
+            f"| "
+            f"{player_history['cached']} em cache "
+            f"| "
+            f"{player_history['errors']} erros"
+        )
+
+        lineups = (
+            result["lineups"]
+        )
+
+        self.stdout.write(
+            "Escalações: "
+            f"{lineups['available']} disponíveis "
+            f"| "
+            f"{lineups['confirmed']} confirmadas "
+            f"| "
+            f"{lineups['starters']} titulares"
+        )
+
+        predictions = (
+            result[
+                "predictions"
+            ]
+        )
 
         self.stdout.write(
             "Previsões: "
             f"{predictions['generated']} novas "
-            f"| {predictions['existing']} já existentes "
-            f"| {predictions['insufficient']} sem base"
+            f"| "
+            f"{predictions['revised']} revisadas "
+            f"| "
+            f"{predictions['existing']} mantidas "
+            f"| "
+            f"{predictions['insufficient']} sem base"
         )
 
         odds = result["odds"]
@@ -64,17 +108,23 @@ class Command(BaseCommand):
         self.stdout.write(
             "Odds: "
             f"{odds['events']} jogos "
-            f"| {odds['offers']} ofertas "
-            f"| {odds['snapshots']} snapshots novos"
+            f"| "
+            f"{odds['offers']} ofertas "
+            f"| "
+            f"{odds['snapshots']} snapshots novos"
         )
 
-        settlement = result[
-            "settlement"
-        ]
+        settlement = (
+            result[
+                "settlement"
+            ]
+        )
 
         self.stdout.write(
             "Liquidação: "
             f"{settlement['settled']} encerradas "
-            f"| {settlement['voided']} anuladas "
-            f"| {settlement['waiting']} aguardando"
+            f"| "
+            f"{settlement['voided']} anuladas "
+            f"| "
+            f"{settlement['waiting']} aguardando"
         )

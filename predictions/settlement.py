@@ -31,33 +31,57 @@ def prediction_result(
     if code == "away_win":
         return away > home
 
+    if code == "double_home_draw":
+        return home >= away
+
+    if code == "double_away_draw":
+        return away >= home
+
+    if code == "double_home_away":
+        return home != away
+
     if code == "btts_yes":
-        return (
+        return home > 0 and away > 0
+
+    if code == "btts_no":
+        return not (
             home > 0
             and away > 0
         )
 
-    if code == "goals_over_1_5":
-        return (
-            home + away > 1.5
+    if code.startswith(
+        "goals_"
+    ):
+        total = home + away
+
+        line = float(
+            code.rsplit(
+                "_",
+                2,
+            )[-2]
+            + "."
+            + code.rsplit(
+                "_",
+                1,
+            )[-1]
         )
 
-    if code == "goals_over_2_5":
-        return (
-            home + away > 2.5
-        )
+        if "_over_" in code:
+            return total > line
+
+        if "_under_" in code:
+            return total < line
 
     stats = list(
-        TeamMatchStats.objects.filter(
-            event=event
-        )
+        TeamMatchStats.objects
+        .filter(event=event)
     )
 
     if len(stats) != 2:
         return None
 
     if code.startswith(
-        "corners_over_"
+        "corners_"
     ):
         values = [
             item.corners
@@ -65,7 +89,7 @@ def prediction_result(
         ]
 
     elif code.startswith(
-        "cards_over_"
+        "cards_"
     ):
         values = [
             item.cards
@@ -81,12 +105,25 @@ def prediction_result(
     ):
         return None
 
-    line = float(
-        code.split("_over_")[1]
-        .replace("_", ".")
+    total = sum(values)
+
+    pieces = (
+        code.split("_")
     )
 
-    return sum(values) > line
+    line = float(
+        pieces[-2]
+        + "."
+        + pieces[-1]
+    )
+
+    if "_over_" in code:
+        return total > line
+
+    if "_under_" in code:
+        return total < line
+
+    return None
 
 
 def settle_pending(provider):

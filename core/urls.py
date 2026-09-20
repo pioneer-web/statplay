@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     dashboard,
+    event_detail,
     prediction_detail,
 )
 
@@ -12,6 +13,13 @@ urlpatterns = [
         dashboard,
         name="dashboard",
     ),
+
+    path(
+        "jogo/<int:event_id>/",
+        event_detail,
+        name="event_detail",
+    ),
+
     path(
         "previsao/<int:prediction_id>/",
         prediction_detail,

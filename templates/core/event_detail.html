@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>Jogo | StatPlay</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#030914;
+ color:#e5e7eb;
+ font-family:system-ui,-apple-system,sans-serif;
+}
+.app{
+ width:100%;
+ max-width:480px;
+ min-height:100vh;
+ margin:auto;
+ padding:16px;
+ background:#07111f;
+}
+a{
+ color:#34d399;
+ text-decoration:none;
+}
+.header{
+ margin:20px 0;
+}
+.teams{
+ font-size:23px;
+ font-weight:900;
+}
+.muted{
+ color:#94a3b8;
+ font-size:12px;
+}
+.box{
+ background:#101b2e;
+ border:1px solid #22314a;
+ border-radius:15px;
+ margin:13px 0;
+ overflow:hidden;
+}
+.title{
+ padding:13px 15px;
+ font-weight:850;
+ border-bottom:1px solid #22314a;
+}
+.market{
+ display:grid;
+ grid-template-columns:1fr auto auto;
+ gap:10px;
+ padding:12px 15px;
+ border-bottom:1px solid #18263a;
+ color:inherit;
+}
+.prob{
+ color:#34d399;
+ font-weight:900;
+}
+.odd{
+ font-size:12px;
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<a href="/">← Voltar</a>
+
+<div class="header">
+ <div class="teams">
+   {{ event.home_team }}
+   ×
+   {{ event.away_team }}
+ </div>
+
+ <div class="muted">
+   {{ event.competition.name }}
+   ·
+   {{ event.starts_at|date:"d/m H:i" }}
+ </div>
+</div>
+
+{% for group in groups %}
+
+<section class="box">
+
+<div class="title">
+ {{ group.label }}
+</div>
+
+{% for p in group.items %}
+
+<a class="market"
+   href="{% url 'prediction_detail' p.id %}">
+
+ <div>
+   {{ p.market.name }}
+ </div>
+
+ <div class="prob">
+   {{ p.probability }}%
+ </div>
+
+ <div class="odd">
+   {% if p.best_odd %}
+     {{ p.best_odd }}
+   {% else %}
+     —
+   {% endif %}
+ </div>
+
+</a>
+
+{% endfor %}
+
+</section>
+
+{% endfor %}
+
+</main>
+</body>
+</html>
